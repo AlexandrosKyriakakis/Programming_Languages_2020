@@ -61,13 +61,15 @@ bool recursiveFoo (int N, int K){
             flag = 0;
         }
         powerOf2[delta]++;
-        // Fastest Power
-        return recursiveFoo(N - pow(2,delta), K - 1);
+        // Fastest Power I found it by shifting!!!
+        //int pow2 = 1 << delta;
+        return recursiveFoo(N - (1 << delta), K - 1);
     }
 
 }
 
 int main (int argc, char** argv){
+  /*  
     FILE * pFile;
     int * buffer;
     int lSize;
@@ -90,7 +92,8 @@ int main (int argc, char** argv){
 
     
 
-  /*  int T = readLong();
+    int T = readLong();
+    */
     
     int N = readLong();
     int K = readLong();
@@ -107,4 +110,3 @@ int main (int argc, char** argv){
     //std::cin >> N;
     //std::cout << log2_64(N) << std::endl;
 }
-    */
