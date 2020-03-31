@@ -1,7 +1,10 @@
 #include <iostream>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define BSIZE 1<<15
-using namespace std;
+
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
 long readLong()
@@ -42,19 +45,66 @@ int log2_64 (uint64_t value)
     value |= value >> 32;
     return tab64[((uint64_t)((value - (value >> 1))*0x07EDD5E59A4E28C2)) >> 58];
 }
-/*unsigned char _BitScanReverse64(
-   unsigned long * Index,
-   unsigned __int64 Mask);
 
-unsigned int Log2_ViaBSR(unsigned long value)
-{
-    unsigned long result;
-    _BitScanReverse64(&result, static_cast<unsigned long>(value));
-    return result;
+int powerOf2[30] = {};
+bool flag = 1;
+int max_delta = 0;
+bool recursiveFoo (int N, int K){
+    if (K > N) return 0;
+    if (K == 0 && N != 0) return 0;
+    
+    if (K == 0) return 1;
+    else {
+        int delta = log2_64(N-K+1);
+        if (flag) {
+            max_delta = delta;
+            flag = 0;
+        }
+        powerOf2[delta]++;
+        // Fastest Power
+        return recursiveFoo(N - pow(2,delta), K - 1);
+    }
+
 }
-*/
-int main (){
+
+int main (int argc, char** argv){
+    FILE * pFile;
+    int * buffer;
+    int lSize;
+    pFile = fopen (argv[1], "r");
+    size_t result;
+    fseek (pFile , 0 , SEEK_END);
+    lSize = ftell (pFile);
+    rewind (pFile);
+    buffer = (int*) malloc (sizeof(int)*lSize);
+    result = fread (buffer, 1 , lSize, pFile);
+    if (result != lSize) return 1;
+    for (int i = 0; i < lSize; i++) {
+        std::cout << buffer[i];
+    }
+     std::cout << std::endl;
+}
+
+    
+    //result = fread();
+
+    
+
+  /*  int T = readLong();
+    
     int N = readLong();
+    int K = readLong();
+
+    bool douleuei = recursiveFoo(N,K);
+    if(!douleuei) std::cout << "[]" << std::endl;
+    else {
+        std::cout << '[';
+        for (int i = 0; i < max_delta; i++){
+            std::cout <<powerOf2[i] << ',';
+        }
+        std::cout << powerOf2[max_delta] << ']' << std::endl;
+    }
     //std::cin >> N;
-    std::cout << log2_64(N) << std::endl;
+    //std::cout << log2_64(N) << std::endl;
 }
+    */
