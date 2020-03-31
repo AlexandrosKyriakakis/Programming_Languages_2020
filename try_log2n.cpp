@@ -1,20 +1,21 @@
 #include <iostream>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <fstream>
+//#include <math.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 
 #define BSIZE 1<<15
 
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
-long readLong()
+long readLong(FILE* argv)
 {
     long d = 0L, x = 0L; char c;
     while(1) {
         if (bpos >= bsize) {
             bpos = 0;
-            if (feof(stdin)) return x;
-            bsize = fread(buffer, 1, BSIZE, stdin);
+            if (feof(argv)) return x;
+            bsize = fread(buffer, 1, BSIZE, argv);
         }
         c = buffer[bpos++];
         if (c >= '0' && c <= '9') { x = x*10 + (c-'0'); d = 1; }
@@ -69,6 +70,9 @@ bool recursiveFoo (int N, int K){
 }
 
 int main (int argc, char** argv){
+    FILE * pFile;
+    pFile = fopen (argv[1], "r");
+  //std::ifstream infile (argv[1]);
   /*  
     FILE * pFile;
     int * buffer;
@@ -95,9 +99,10 @@ int main (int argc, char** argv){
     int T = readLong();
     */
     
-    int N = readLong();
-    int K = readLong();
-
+    int N = readLong(pFile);
+    int K = readLong(pFile);
+    //int N,K;
+    //infile >> N >> K;
     bool douleuei = recursiveFoo(N,K);
     if(!douleuei) std::cout << "[]" << std::endl;
     else {
