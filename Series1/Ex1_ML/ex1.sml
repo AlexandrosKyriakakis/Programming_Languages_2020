@@ -8,14 +8,15 @@ fun recursiveFoo N K lastelem resultList = (* result list start with [0]*)
               val powDelta = IntInf.pow(2,delta)
               (* addZeros resultList K delta*)
               fun addZeros resultList lastelem delta =
-                  if (delta = lastelem) then resultList
+                  if (delta = (lastelem-1)) then resultList
                   else addZeros (0::resultList) lastelem (delta + 1)
 
             in
-                if (delta <> lastelem) 
-                then
-                      recursiveFoo (N - powDelta) (K-1) delta
-                else  recursiveFoo (N - powDelta) (K-1) delta (((hd resultList)+1) :: (tl resultList))
+                if (delta > lastelem)
+                then recursiveFoo (N - powDelta) (K-1) delta (1::resultList)
+                else if (delta < lastelem) 
+                then recursiveFoo (N - powDelta) (K-1) delta (1::(addZeros resultList lastelem delta))
+                else recursiveFoo (N - powDelta) (K-1) delta (((hd resultList)+1) :: (tl resultList))
             end;
 
 fun printlist nil = print("[]" ^ "\n")
@@ -25,4 +26,6 @@ fun printlist nil = print("[]" ^ "\n")
            | printl (h::t) = (print (Int.toString(h) ^ ", ") ; printl t)
          in
              (print("[") ; printl x)
-         end
+         end;
+
+recursiveFoo 42 6 0 [];
