@@ -23,7 +23,7 @@ long readLong(FILE* argv)
     }
     return -1;
 }
-long long N, H[1000000];
+//long long N, H[1000000];
 
 
 const int tab64[64] = {
@@ -50,6 +50,7 @@ int log2_64 (uint64_t value)
 int powerOf2[30] = {};
 bool flag = 1;
 int max_delta = 0;
+
 bool recursiveFoo (int N, int K){
     if (K > N) return 0;
     if (K == 0 && N != 0) return 0;
@@ -72,6 +73,30 @@ bool recursiveFoo (int N, int K){
 int main (int argc, char** argv){
     FILE * pFile;
     pFile = fopen (argv[1], "r");
+    int T = readLong(pFile);
+    for (int i = 0; i < T; i++){
+        // Initializations
+        int newpowerOf2[30] = {};
+        powerOf2 = newpowerOf2;
+        flag = 1;
+        max_delta = 0;
+        
+        int N = readLong(pFile);
+        int K = readLong(pFile);
+        bool douleuei = recursiveFoo(N,K);
+        if(!douleuei) std::cout << "[]" << std::endl;
+        else {
+            std::cout << '[';
+            for (int i = 0; i < max_delta; i++){
+                std::cout <<powerOf2[i] << ',';
+            }
+            std::cout << powerOf2[max_delta] << ']' << std::endl;
+        }
+        
+    }
+    //std::cin >> N;
+    //std::cout << log2_64(N) << std::endl;
+}
   //std::ifstream infile (argv[1]);
   /*  
     FILE * pFile;
@@ -98,20 +123,3 @@ int main (int argc, char** argv){
 
     int T = readLong();
     */
-    
-    int N = readLong(pFile);
-    int K = readLong(pFile);
-    //int N,K;
-    //infile >> N >> K;
-    bool douleuei = recursiveFoo(N,K);
-    if(!douleuei) std::cout << "[]" << std::endl;
-    else {
-        std::cout << '[';
-        for (int i = 0; i < max_delta; i++){
-            std::cout <<powerOf2[i] << ',';
-        }
-        std::cout << powerOf2[max_delta] << ']' << std::endl;
-    }
-    //std::cin >> N;
-    //std::cout << log2_64(N) << std::endl;
-}
