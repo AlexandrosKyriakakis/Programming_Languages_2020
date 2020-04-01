@@ -5,6 +5,7 @@ fun recursiveFoo N K lastelem resultList = (* result list start with [] and last
          else 
             let 
               val delta = IntInf.log2(N-K+1)
+              (*Do pow with shift*)
               val powDelta = IntInf.pow(2,delta)
               (* addZeros resultList K delta*)
               fun addZeros resultList lastelem delta =
@@ -27,12 +28,14 @@ fun printlist nil = print("[]" ^ "\n")
         in 
             (print("[") ; printl x)
         end;
-(*
-fun printList nil = print("[]\n")
-    | printList (h::nil) = print (Int.toString (h) ^"]\n")
-    | printList (h::t) = printList t
-printList [1,2,3];
-print ( Int.toString(hd (recursiveFoo 42 6 0 [])) );
-*)
-recursiveFoo 42 6 0 [];
+
+val a = CommandLine.arguments ();
+val v1 = Int.fromString(hd a); (* Then Int*)
+val v2 = Int.fromString(hd (tl a)); (* Then Int*)
+val N = valOf (v1);
+val K = valOf (v2);
+val N = Int.toLarge(N);
+val K = Int.toLarge(K);
+recursiveFoo N K 0 [];
 printlist it;
+OS.Process.exit(OS.Process.success);
