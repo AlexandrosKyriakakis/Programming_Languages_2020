@@ -1,4 +1,4 @@
-fun recursiveFoo N K lastelem resultList = (* result list start with [0]*)
+fun recursiveFoo N K lastelem resultList = (* result list start with [] and lastelem = 0*)
     if (K > N) then []
     else if (K = 0 andalso N <> 0) then []
     else if (K = 0 andalso N = 0) then resultList
@@ -20,12 +20,19 @@ fun recursiveFoo N K lastelem resultList = (* result list start with [0]*)
             end;
 
 fun printlist nil = print("[]" ^ "\n")
-     | printlist x =
-     let
-         fun printl (h::nil) = print (Int.toString (h) ^"]" ^"\n")
-           | printl (h::t) = (print (Int.toString(h) ^ ", ") ; printl t)
-         in
-             (print("[") ; printl x)
-         end;
-
+    | printlist x =
+    let
+        fun printl (h::nil) = print (Int.toString (h) ^"]" ^"\n")
+          | printl (h::t) = (print (Int.toString(h) ^ ", ") ; printl t)
+        in 
+            (print("[") ; printl x)
+        end;
+(*
+fun printList nil = print("[]\n")
+    | printList (h::nil) = print (Int.toString (h) ^"]\n")
+    | printList (h::t) = printList t
+printList [1,2,3];
+print ( Int.toString(hd (recursiveFoo 42 6 0 [])) );
+*)
 recursiveFoo 42 6 0 [];
+printlist it;
