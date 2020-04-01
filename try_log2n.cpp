@@ -1,11 +1,7 @@
 #include <iostream>
-#include <fstream>
-//#include <math.h>
-//#include <stdio.h>
-//#include <stdlib.h>
 
 #define BSIZE 1<<15
-
+// Fast input taken from Dimitris Fotakis
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
 long readLong(FILE* argv)
@@ -23,9 +19,9 @@ long readLong(FILE* argv)
     }
     return -1;
 }
-//long long N, H[1000000];
 
 
+// Fast Log2 taken from StackOverflow url: https://stackoverflow.com/questions/11376288/fast-computing-of-log2-for-64-bit-integers
 const int tab64[64] = {
     63,  0, 58,  1, 59, 47, 53,  2,
     60, 39, 48, 27, 54, 33, 42,  3,
@@ -47,7 +43,7 @@ int log2_64 (uint64_t value)
     return tab64[((uint64_t)((value - (value >> 1))*0x07EDD5E59A4E28C2)) >> 58];
 }
 
-int powerOf2[30] = {};
+int powerOf2[30];
 bool flag = 1;
 int max_delta = 0;
 
@@ -63,8 +59,7 @@ bool recursiveFoo (int N, int K){
             flag = 0;
         }
         powerOf2[delta]++;
-        // Fastest Power I found it by shifting!!!
-        //int pow2 = 1 << delta;
+        // Fastest Power of 2 I found it by shifting!!!
         return recursiveFoo(N - (1 << delta), K - 1);
     }
 
@@ -76,8 +71,8 @@ int main (int argc, char** argv){
     int T = readLong(pFile);
     for (int i = 0; i < T; i++){
         // Initializations
-        int newpowerOf2[30] = {};
-        powerOf2 = newpowerOf2;
+        //Fast Initialization of the array
+        memset(powerOf2,0,30*sizeof(int));
         flag = 1;
         max_delta = 0;
         
@@ -94,32 +89,4 @@ int main (int argc, char** argv){
         }
         
     }
-    //std::cin >> N;
-    //std::cout << log2_64(N) << std::endl;
 }
-  //std::ifstream infile (argv[1]);
-  /*  
-    FILE * pFile;
-    int * buffer;
-    int lSize;
-    pFile = fopen (argv[1], "r");
-    size_t result;
-    fseek (pFile , 0 , SEEK_END);
-    lSize = ftell (pFile);
-    rewind (pFile);
-    buffer = (int*) malloc (sizeof(int)*lSize);
-    result = fread (buffer, 1 , lSize, pFile);
-    if (result != lSize) return 1;
-    for (int i = 0; i < lSize; i++) {
-        std::cout << buffer[i];
-    }
-     std::cout << std::endl;
-}
-
-    
-    //result = fread();
-
-    
-
-    int T = readLong();
-    */

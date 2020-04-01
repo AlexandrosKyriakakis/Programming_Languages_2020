@@ -1,6 +1,6 @@
 //#include <math.h>
 #include <iostream>
-//using namespace std;
+using namespace std;
 /*
 int getThePowerOfTwo(int value) {
     static constexpr int twos[] = {
@@ -42,7 +42,10 @@ unsigned lookup_log2(unsigned int value)
 int main () {
     int b = 9;
     int pow2 = 2 << 9;
-    std::cout <<  pow2 << std::endl;
+    int myarray[100];
+    memset(myarray,0,100*sizeof(int));
+    for (int i = 0; i < 100; i++) cout << myarray[i] << endl; 
+    //std::cout <<  pow2 << std::endl;
     return 0;
 
 }
