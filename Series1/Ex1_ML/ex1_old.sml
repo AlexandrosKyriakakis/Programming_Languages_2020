@@ -29,40 +29,13 @@ fun printlist nil = print("[]" ^ "\n")
             (print("[") ; printl x)
         end;
 
-fun parse file =
-    let
-  (* A function to read an integer from specified input. *)
-        fun readInt input = 
-      Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
-
-  (* Open input file. *)
-      val inStream = TextIO.openIn file
-
-        (* Read an integer (number of countries) and consume newline. *)
-  val n = readInt inStream
-  val _ = TextIO.inputLine inStream
-
-        (* A function to read N integers from the open file. *)
-  fun readInts 0 acc = rev acc  
-    | readInts i acc = readInts (i - 1) (readInt inStream :: acc)
-    in
-    (n, readInts (2*n) [])
-
-    end
-val a = hd(CommandLine.arguments ())
-val (n, number_list) = parse a
-
-(*val hello = recursiveFoo d e 0 []
-val _ = printlist hello *)
-fun do_the_job (k,curr_list) =
-  let 
-    val b = hd(curr_list)
-    val c = hd(tl(curr_list))
-    val d = Int.toLarge(b)
-    val e = Int.toLarge(c)
-  in
-    if (k > 0) then (printlist(recursiveFoo d e 0 []) ; do_the_job ((k-1),tl(tl(curr_list)))) 
-    else ()
-  end;
-do_the_job(n,number_list);
-(*val _ = OS.Process.exit(OS.Process.success) *)
+val a = CommandLine.arguments ();
+val v1 = Int.fromString(hd a); (* Then Int*)
+val v2 = Int.fromString(hd (tl a)); (* Then Int*)
+val N = valOf (v1);
+val K = valOf (v2);
+val N = Int.toLarge(N);
+val K = Int.toLarge(K);
+recursiveFoo N K 0 [];
+printlist it;
+OS.Process.exit(OS.Process.success);
