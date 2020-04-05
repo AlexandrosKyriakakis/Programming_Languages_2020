@@ -1,3 +1,4 @@
+val pow2 = ()
 fun recursiveFoo N K lastelem resultList= (* result list start with [0]*)
     if (K>N) then []
     else if (K = 0 andalso N != 0) then []

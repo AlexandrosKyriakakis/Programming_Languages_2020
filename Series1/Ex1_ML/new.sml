@@ -54,8 +54,10 @@ val (n, number_list) = parse a
 
 (*val hello = recursiveFoo d e 0 []
 val _ = printlist hello *)
-fun do_the_job (k,curr_list) =
-  let 
+fun do_the_job (0,_) = ()
+  | do_the_job (_,[]) = ()
+  | do_the_job (k, curr_list) =
+  let
     val b = hd(curr_list)
     val c = hd(tl(curr_list))
     val d = Int.toLarge(b)
@@ -65,4 +67,4 @@ fun do_the_job (k,curr_list) =
     else ()
   end
 val _ = do_the_job(n,number_list);
-(*val _ = OS.Process.exit(OS.Process.success) *)
+val _ = OS.Process.exit(OS.Process.success);
