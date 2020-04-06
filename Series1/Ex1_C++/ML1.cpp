@@ -25,13 +25,13 @@ void printlist(list <int> g){
 int main(){
 	int T;
 	cin>>T;
-	cout<<"\n";
+	//cout<<"\n";
 	int N[T],K[T];
 	int L,M;
 	for(int i=0; i<T; i++){
 		cin>>N[i];
 		cin>>K[i];
-		cout<<"\n";
+		//cout<<"\n";
 		
 	}
 	for(int i=0; i<T; i++){
