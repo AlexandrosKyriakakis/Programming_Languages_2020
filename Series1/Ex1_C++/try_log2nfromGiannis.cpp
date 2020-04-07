@@ -12,7 +12,6 @@ long readLong(FILE* argv)
         if (bpos >= bsize) {
             bpos = 0;
             if (feof(argv)) { // Edw trww seg
-    std::cout <<"EISAI MALAKAS" <<std::endl;
                 
                 return x;}
             bsize = fread(buffer, 1, BSIZE, argv);
