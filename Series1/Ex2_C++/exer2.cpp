@@ -1,8 +1,13 @@
 // CPP implementation of the approach 
-#include <bits/stdc++.h>
-#include<cstdio>
+#include <vector>
+#include <cstdio>
+#include <queue>
+#include <unordered_map>
+#include <iostream>
+#include <algorithm>
 using namespace std;
-#define BSIZE 1<<15
+#define BSIZE 1<<15 
+
 // Fast input taken from Dimitris Fotakis
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
@@ -22,34 +27,37 @@ long readLong(FILE* argv)
     return -1;
 }
   
+
 // Graph class 
 class Graph 
-{ 
-public: 
-      
-    // No. of vertices of graph 
-    int v; 
-  
-    // Adjacency List 
-    vector<int> *l; 
-    //Edge array
-    vector<int> children;
-    void DFSUtil(int v, vector<bool>& visited, vector<int>& final_children);
-    void DFS(int v, vector<bool>& visited, vector<int>& final_children);
-    Graph(int v) 
     { 
-        this->v = v; 
-        this->l = new vector<int>[v];
-        this->children = vector<int>(v);
-    } 
-  
-    void addedge(int i, int j) 
-    { 
-        l[i].push_back(j); 
-        l[j].push_back(i);
-    }
-  //  void printedge()
-}; 
+    public: 
+        
+        // No. of vertices of graph 
+        int v; 
+    
+        // Adjacency List 
+        vector<int> *l; 
+        //Edge array
+        vector<int> children;
+
+        void DFSUtil(int v, vector<bool>& visited, vector<int>& final_children);
+        void DFS(int v, vector<bool>& visited, vector<int>& final_children);
+        
+        Graph(int v) 
+        { 
+            this->v = v; 
+            this->l = new vector<int>[v];
+            this->children = vector<int>(v);
+        } 
+    
+        void addedge(int i, int j) 
+        { 
+            l[i].push_back(j); 
+            l[j].push_back(i);
+        }
+    //  void printedge()
+    }; 
 
 
     // Checking all the nodes which are not visited 
@@ -86,11 +94,11 @@ void Graph::DFS(int v,vector<bool>& visited, vector<int>& final_children) {
      
   
 // Function to find a cycle in the given graph if exists 
-void findCycle(int n, int r, Graph g) 
+bool findCycle(int n, int r, Graph g) 
 { 
     // HashMap to store the degree of each node 
-    unordered_map<int, int> degree;
-    int temp = 0; 
+    std::unordered_map<int, int> degree;
+    int child = 0; 
     for (int i = 0; i < g.v; i++) 
         degree[i] = g.l[i].size(); 
   
@@ -102,41 +110,50 @@ void findCycle(int n, int r, Graph g)
   
     // Continuously adding those nodes whose 
     // degree is 1 to the queue 
-    while (true) 
-    { 
+    //while (true) 
+    //{ 
         // Adding nodes to queue whose degree is 1 
         // and is not visited 
-        for (unsigned int i = 0; i < degree.size(); i++) 
-            if (degree.at(i) == 1 and !visited[i]) 
-                q.push(i); 
-  
-        // If queue becomes empty then get out 
-        // of the continuous loop 
-        if (q.empty()) 
-            break; 
-  
-        while (!q.empty()) 
-        { 
-            // Remove the front element from the queue 
-            temp = q.front();
-            q.pop(); 
-  
-            // Mark the removed element visited 
-            visited.at(temp) = 1; 
-  
-            // Decrement the degree of all those nodes 
-            // adjacent to removed node 
-            for (unsigned int i = 0; i < g.l[temp].size(); i++) 
-            { 
-                int value = degree[g.l[temp][i]]; 
-                degree[g.l[temp][i]] = --value;
-                g.children[g.l[temp][i]] += g.children[temp] + 1;
-            } 
-        } 
+      
+    for (unsigned int i = 0; i < degree.size(); i++) 
+        if (degree.at(i) == 0) return 0;
+        else if (degree.at(i) == 1 and !visited[i]) 
+            q.push(i); 
+    
+
+    // If queue becomes empty then get out 
+    // of the continuous loop        
+
+    while (!q.empty()) 
+    { 
+        // Remove the front element from the queue 
+        child = q.front();
+        q.pop(); 
+
+        // Mark the removed element visited 
+        visited.at(child) = 1; 
+
+        // Decrement the degree of all those nodes 
+        // adjacent to removed node 
+        int i = 0;
+        int Father = g.l[child][i];
+
+        int value = degree[Father]; 
+        //FIXME add to queue
+        degree[Father] = --value;
+        if (value == 1)  q.push(Father);
+
+        g.l[Father].erase(std::remove(g.l[Father].begin(), g.l[Father].end(), child), g.l[Father].end());
+        
+        //g.l[Father][child]
+        g.children[Father] += g.children[child] + 1;
+    
+        
     } 
+    //} 
     bool flag = false;
     vector<int> final_children;
-    g.DFS(temp,visited,final_children);
+    g.DFS(child,visited,final_children);
     for (int i = 0; i < g.v; i++) {
         if (!visited[i]) {
             flag = true;
@@ -146,7 +163,7 @@ void findCycle(int n, int r, Graph g)
         }
     }
     if (!flag) {
-        sort(final_children.begin(),final_children.end());
+        std::sort(final_children.begin(),final_children.end());
         int size = final_children.size();
         printf("CORONA %d\n", size);
 //        cout << "CORONA" << " " << size << endl;
@@ -157,7 +174,7 @@ void findCycle(int n, int r, Graph g)
         printf("%d\n",final_children[size - 1] );
  //       cout << final_children[size - 1] << endl;
     }           
-  
+  return 1;
 } 
   
 // Driver Code 
@@ -166,24 +183,25 @@ int main(int argc, char** argv)
     FILE * pFile;
     pFile = fopen (argv[1], "r");
     int T = readLong(pFile);
-//  cout << "read first element" << " " << T << endl;
+    // Input
     for (int i = 0; i < T; i++) {
         int N = readLong(pFile);
-//      cout << "N = " << N << endl;
         int M = readLong(pFile);
-        if (M < N) {
+        if (M != N) {
             printf ("NO CORONA\n");
-//        cout << "NO CORONA" << endl;
-        continue;
-       }
+            continue; 
+        }
+    // Initialize Graph
        Graph* g = new Graph(N);
-//     cout << "created new Graph with: "<< M << " edges and " << N << " nodes"  << endl;
-       for (int j = 0; j < M; j++) {
-        int k = readLong(pFile);
-        int l = readLong(pFile);
-        g->addedge(k-1,l-1);
+        for (int j = 0; j < M; j++) {
+            int k = readLong(pFile);
+            int l = readLong(pFile);
+            g->addedge(k-1,l-1);   
+        }
+       if (!findCycle(N, M, *g)) {
+            printf ("NO CORONA\n");
        }
-       findCycle(N, M, *g);
+        
        delete g;
     } 
     return 0; 
