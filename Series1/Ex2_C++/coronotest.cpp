@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string.h>
 #include <vector>
-#define BSIZE 1<<20
-using namespace std;
+#define BSIZE 1<<15
+
 // Fast input taken from Dimitris Fotakis
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
@@ -25,12 +25,12 @@ long readLong(FILE* argv)
 }
 
 // Global Variables
-vector <unsigned int> Node[1000000];
-queue <unsigned int> singleEdgedNodes;
+std::vector <unsigned int> Node[1000000];
+std::queue <unsigned int> singleEdgedNodes;
 unsigned int degree[1000000];
 unsigned int numOfChildren[1000000];
-bool visited[1000000];
-vector<unsigned int> finalRoots;
+bool isAce[1000000];
+std::vector<unsigned int> finalRoots;
 unsigned int N = 0;
 unsigned int father = 0; // to use as last element
 unsigned int numVisited = 0; // to check if all visited // edge-case graph is tree
@@ -40,24 +40,23 @@ unsigned int numFinalRoots = 0; // for output
 bool recursiveFoo(){
     // Find all nodes with only one edge
     for (unsigned int i = 0; i < N; i++) {
-        unsigned int degree_i = degree[i];
-        if (degree_i == 0) return 0; 
-        else if (degree_i == 1) singleEdgedNodes.push(i);
+        if (isAce[i]) singleEdgedNodes.push(i);
     }
     // Find num of children to all nodes
     while(!singleEdgedNodes.empty()){
         // Pop Front Leaf
         unsigned int leaf = singleEdgedNodes.front();
+        if(Node[leaf].empty()) return 0;
         singleEdgedNodes.pop();
         //
         father = Node[leaf][0];
         // Erase fathers edge to leaf
-        Node[father].erase(remove(Node[father].begin(), Node[father].end(), leaf), Node[father].end());
+        Node[father].erase(std::remove(Node[father].begin(), Node[father].end(), leaf), Node[father].end());
         // Decrease fathers degree by 1 and check if fathers degree == 1
         if (--degree[father] == 1) singleEdgedNodes.push(father);
         // Add num of leaf's chindrens to father + 1
         ++numOfChildren[father] += numOfChildren[leaf];
-        visited[leaf] = true;
+        //visited[leaf] = true;
         numVisited++;
     }
     return 1;
@@ -71,7 +70,7 @@ bool randomWalk (){
     do{
         // if degree > 2 not simple cycle
         if (degree[randomUnvisitedNode] > 2) return 0;
-        visited[randomUnvisitedNode] = true;
+        //visited[randomUnvisitedNode] = true;
         numVisited++;
         
         // Add to final Result
@@ -79,22 +78,22 @@ bool randomWalk (){
         numFinalRoots++;
         // Go to next random node
         unsigned int tempFather = Node[randomUnvisitedNode][0];
-        Node[tempFather].erase(remove(Node[tempFather].begin(), Node[tempFather].end(), randomUnvisitedNode), Node[tempFather].end());
+        Node[tempFather].erase(std::remove(Node[tempFather].begin(), Node[tempFather].end(), randomUnvisitedNode), Node[tempFather].end());
         randomUnvisitedNode = tempFather;
     }while(randomUnvisitedNode != father);
-    //cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<endl;
+    //std::cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<std::endl;
     if (numVisited != N) return 0;
     return 1;
 }
 // Print Results
 void printFinal(){
     if (recursiveFoo() && randomWalk()){
-        sort(finalRoots.begin(),finalRoots.end());
-        printf("CORONA %d\n", numFinalRoots);
+        std::sort(finalRoots.begin(),finalRoots.end());
+        printf("CORONA %u\n", numFinalRoots);
         for (unsigned int i = 0; i < numFinalRoots - 1; i++) {
-            printf("%d ",finalRoots[i]);
+            printf("%u ",finalRoots[i]);
         }
-        printf("%d\n",finalRoots[numFinalRoots - 1] );
+        printf("%u\n",finalRoots[numFinalRoots - 1] );
     }
     else {
         printf ("NO CORONA\n");
@@ -102,11 +101,15 @@ void printFinal(){
 }
 
 int main(int argc, char** argv) { 
-    ios::sync_with_stdio(false);
-    cin.tie(0);
+    // Faster I/O
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    
+    // Input from file
     FILE * pFile;
     pFile = fopen (argv[1], "r");
     unsigned int T = readLong(pFile);
+    
     // Input
     for (unsigned int i = 0; i < T; i++) {
         N = readLong(pFile);
@@ -123,13 +126,13 @@ int main(int argc, char** argv) {
         numFinalRoots = 0;
         memset(degree,0,N*sizeof(unsigned int));
         memset(numOfChildren,0,N*sizeof(unsigned int));
-        memset(visited,0,N*sizeof(bool));
+        memset(isAce,1,N*sizeof(bool));
         
         for (unsigned int j = 0; j < M; j++) {
             unsigned int insertedNode1 = readLong(pFile);
-            degree[insertedNode1-1]++;
+            if(++degree[insertedNode1-1] > 1) isAce[insertedNode1-1] = 0;
             unsigned int insertedNode2 = readLong(pFile);
-            degree[insertedNode2-1]++;
+            if(++degree[insertedNode2-1] > 1) isAce[insertedNode2-1] = 0;
             // Adding Edges <-> to graph
             Node[insertedNode1-1].push_back(insertedNode2-1);
             Node[insertedNode2-1].push_back(insertedNode1-1); 
@@ -141,7 +144,7 @@ int main(int argc, char** argv) {
             Node[i].clear();
         }
         // Clear queue
-        singleEdgedNodes = queue<unsigned int>();
+        singleEdgedNodes = std::queue<unsigned int>();
         // Clear last Results
         finalRoots.clear();
     } 

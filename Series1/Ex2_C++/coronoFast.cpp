@@ -90,11 +90,11 @@ bool randomWalk (){
 void printFinal(){
     if (recursiveFoo() && randomWalk()){
         std::sort(finalRoots.begin(),finalRoots.end());
-        printf("CORONA %d\n", numFinalRoots);
+        printf("CORONA %u\n", numFinalRoots);
         for (unsigned int i = 0; i < numFinalRoots - 1; i++) {
-            printf("%d ",finalRoots[i]);
+            printf("%u ",finalRoots[i]);
         }
-        printf("%d\n",finalRoots[numFinalRoots - 1] );
+        printf("%u\n",finalRoots[numFinalRoots - 1] );
     }
     else {
         printf ("NO CORONA\n");
