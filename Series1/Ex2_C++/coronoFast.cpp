@@ -29,7 +29,6 @@ std::vector <unsigned int> Node[1000000];
 std::queue <unsigned int> singleEdgedNodes;
 unsigned int degree[1000000];
 unsigned int numOfChildren[1000000];
-bool visited[1000000];
 std::vector<unsigned int> finalRoots;
 unsigned int N = 0;
 unsigned int father = 0; // to use as last element
@@ -40,9 +39,8 @@ unsigned int numFinalRoots = 0; // for output
 bool recursiveFoo(){
     // Find all nodes with only one edge
     for (unsigned int i = 0; i < N; i++) {
-        unsigned int degree_i = degree[i];
-        if (degree_i == 0) return 0; 
-        else if (degree_i == 1) singleEdgedNodes.push(i);
+        if (degree[i] == 0) return 0; 
+        else if (degree[i] == 1) singleEdgedNodes.push(i);
     }
     // Find num of children to all nodes
     while(!singleEdgedNodes.empty()){
@@ -57,7 +55,6 @@ bool recursiveFoo(){
         if (--degree[father] == 1) singleEdgedNodes.push(father);
         // Add num of leaf's chindrens to father + 1
         ++numOfChildren[father] += numOfChildren[leaf];
-        visited[leaf] = true;
         numVisited++;
     }
     return 1;
@@ -71,7 +68,6 @@ bool randomWalk (){
     do{
         // if degree > 2 not simple cycle
         if (degree[randomUnvisitedNode] > 2) return 0;
-        visited[randomUnvisitedNode] = true;
         numVisited++;
         
         // Add to final Result
@@ -127,7 +123,6 @@ int main(int argc, char** argv) {
         numFinalRoots = 0;
         memset(degree,0,N*sizeof(unsigned int));
         memset(numOfChildren,0,N*sizeof(unsigned int));
-        memset(visited,0,N*sizeof(bool));
         
         for (unsigned int j = 0; j < M; j++) {
             unsigned int insertedNode1 = readLong(pFile);
