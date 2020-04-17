@@ -102,8 +102,8 @@ void printFinal(){
 }
 
 int main(int argc, char** argv) { 
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
+    ios::sync_with_stdio(false);
+    cin.tie(0);
     FILE * pFile;
     pFile = fopen (argv[1], "r");
     unsigned int T = readLong(pFile);
