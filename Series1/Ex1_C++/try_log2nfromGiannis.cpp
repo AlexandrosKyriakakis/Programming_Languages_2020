@@ -73,6 +73,8 @@ bool recursiveFoo (long N, long K){
 }
 
 int main (int argc, char** argv){
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
     FILE * pFile;
     pFile = fopen (argv[1], "r");
     int T = readLong(pFile);
@@ -86,13 +88,13 @@ int main (int argc, char** argv){
         long N = readLong(pFile);
         long K = readLong(pFile);
         bool douleuei = recursiveFoo(N,K);
-        if(!douleuei) std::cout << "[]" << std::endl;
+        if(!douleuei) printf("[]\n");
         else {
-            std::cout << '[';
+            printf("[");
             for (int i = 0; i < max_delta; i++){
-                std::cout <<powerOf2[i] << ',';
+                printf("%d,",powerOf2[i]);
             }
-            std::cout << powerOf2[max_delta] << ']' << std::endl;
+            printf ("%d]\n",powerOf2[max_delta]);
         }
         
     }
