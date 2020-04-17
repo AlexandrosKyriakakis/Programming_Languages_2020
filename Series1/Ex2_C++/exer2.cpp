@@ -1,7 +1,7 @@
-// CPP implementation of the approach 
 #include <vector>
 #include <cstdio>
 #include <queue>
+#include <string.h>
 #include <unordered_map>
 #include <iostream>
 #include <algorithm>
@@ -27,7 +27,11 @@ long readLong(FILE* argv)
     return -1;
 }
   
-
+unsigned int children[1000000];
+unsigned int degree[1000000];
+bool visited[1000000];
+vector<int> final_children;
+queue<int> q; 
 // Graph class 
 class Graph 
     { 
@@ -35,20 +39,16 @@ class Graph
         
         // No. of vertices of graph 
         int v; 
-    
         // Adjacency List 
         vector<int> *l; 
-        //Edge array
-        vector<int> children;
 
-        void DFSUtil(int v, vector<bool>& visited, vector<int>& final_children);
-        void DFS(int v, vector<bool>& visited, vector<int>& final_children);
+        void DFSUtil(int v);
+        void DFS(int v);
         
         Graph(int v) 
         { 
             this->v = v; 
             this->l = new vector<int>[v];
-            this->children = vector<int>(v);
         } 
     
         void addedge(int i, int j) 
@@ -62,7 +62,7 @@ class Graph
 
     // Checking all the nodes which are not visited 
     // i.e. they are part of the cycle
-    void Graph::DFSUtil(int v, vector<bool>& visited, vector<int>& final_children) {
+    void Graph::DFSUtil(int v) {
 
     // Mark the current node as visited and
     // print it
@@ -77,15 +77,15 @@ class Graph
     vector<int>::iterator i;
     for (i = l[v].begin(); i != l[v].end(); ++i)
         if (!visited[*i])
-            DFSUtil(*i, visited,final_children);
+            DFSUtil(*i);
 }
 // DFS traversal of the vertices reachable from v.
 // It uses recursive DFSUtil()
-void Graph::DFS(int v,vector<bool>& visited, vector<int>& final_children) {
+void Graph::DFS(int v) {
     
 
     // Call the recursive helper function
-    DFSUtil(v, visited,final_children);
+    DFSUtil(v);
 }
     
 
@@ -96,17 +96,11 @@ void Graph::DFS(int v,vector<bool>& visited, vector<int>& final_children) {
 // Function to find a cycle in the given graph if exists 
 bool findCycle(int n, int r, Graph g) 
 { 
-    // HashMap to store the degree of each node 
-    std::unordered_map<int, int> degree;
-    int child = 0; 
-    for (int i = 0; i < g.v; i++) 
-        degree[i] = g.l[i].size(); 
-  
     // Array to track visited nodes 
-    vector<bool>visited(g.v);
+
   
     // Queue to store the nodes of degree 1 
-    queue<int> q; 
+    
   
     // Continuously adding those nodes whose 
     // degree is 1 to the queue 
@@ -115,15 +109,16 @@ bool findCycle(int n, int r, Graph g)
         // Adding nodes to queue whose degree is 1 
         // and is not visited 
       
-    for (unsigned int i = 0; i < degree.size(); i++) 
-        if (degree.at(i) == 0) return 0;
-        else if (degree.at(i) == 1 and !visited[i]) 
+    for (int i = 0; i < g.v; i++) 
+        if (degree[i] == 0) return 0;
+        else if (degree[i] == 1) 
             q.push(i); 
     
 
     // If queue becomes empty then get out 
     // of the continuous loop        
 
+    int child = 0; 
     while (!q.empty()) 
     { 
         // Remove the front element from the queue 
@@ -131,7 +126,7 @@ bool findCycle(int n, int r, Graph g)
         q.pop(); 
 
         // Mark the removed element visited 
-        visited.at(child) = 1; 
+        visited[child] = 1; 
 
         // Decrement the degree of all those nodes 
         // adjacent to removed node 
@@ -146,14 +141,16 @@ bool findCycle(int n, int r, Graph g)
         g.l[Father].erase(std::remove(g.l[Father].begin(), g.l[Father].end(), child), g.l[Father].end());
         
         //g.l[Father][child]
-        g.children[Father] += g.children[child] + 1;
+        children[Father] += children[child] + 1;
     
         
     } 
     //} 
     bool flag = false;
-    vector<int> final_children;
-    g.DFS(child,visited,final_children);
+    
+    
+    g.DFS(child);
+    
     for (int i = 0; i < g.v; i++) {
         if (!visited[i]) {
             flag = true;
@@ -166,13 +163,10 @@ bool findCycle(int n, int r, Graph g)
         std::sort(final_children.begin(),final_children.end());
         int size = final_children.size();
         printf("CORONA %d\n", size);
-//        cout << "CORONA" << " " << size << endl;
         for (int i = 0; i < size - 1; i++) {
             printf("%d ",final_children[i]);
-//            cout << final_children[i] << " ";
         }
         printf("%d\n",final_children[size - 1] );
- //       cout << final_children[size - 1] << endl;
     }           
   return 1;
 } 
@@ -192,10 +186,15 @@ int main(int argc, char** argv)
             continue; 
         }
     // Initialize Graph
+       memset(degree,0,N*sizeof(unsigned int));
+       memset(children,0,N*sizeof(unsigned int));
+       memset(visited,0,N*sizeof(bool));
        Graph* g = new Graph(N);
         for (int j = 0; j < M; j++) {
             int k = readLong(pFile);
+            degree[k-1]++;
             int l = readLong(pFile);
+            degree[l-1]++;
             g->addedge(k-1,l-1);   
         }
        if (!findCycle(N, M, *g)) {
@@ -203,6 +202,7 @@ int main(int argc, char** argv)
        }
         
        delete g;
+       final_children.clear();
     } 
     return 0; 
 } 
