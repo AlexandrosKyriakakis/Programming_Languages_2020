@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string.h>
 #include <vector>
-#define BSIZE 1<<15
-
+#define BSIZE 1<<20
+using namespace std;
 // Fast input taken from Dimitris Fotakis
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
@@ -25,12 +25,12 @@ long readLong(FILE* argv)
 }
 
 // Global Variables
-std::vector <unsigned int> Node[1000000];
-std::queue <unsigned int> singleEdgedNodes;
+vector <unsigned int> Node[1000000];
+queue <unsigned int> singleEdgedNodes;
 unsigned int degree[1000000];
 unsigned int numOfChildren[1000000];
 bool visited[1000000];
-std::vector<unsigned int> finalRoots;
+vector<unsigned int> finalRoots;
 unsigned int N = 0;
 unsigned int father = 0; // to use as last element
 unsigned int numVisited = 0; // to check if all visited // edge-case graph is tree
@@ -52,7 +52,7 @@ bool recursiveFoo(){
         //
         father = Node[leaf][0];
         // Erase fathers edge to leaf
-        Node[father].erase(std::remove(Node[father].begin(), Node[father].end(), leaf), Node[father].end());
+        Node[father].erase(remove(Node[father].begin(), Node[father].end(), leaf), Node[father].end());
         // Decrease fathers degree by 1 and check if fathers degree == 1
         if (--degree[father] == 1) singleEdgedNodes.push(father);
         // Add num of leaf's chindrens to father + 1
@@ -79,17 +79,17 @@ bool randomWalk (){
         numFinalRoots++;
         // Go to next random node
         unsigned int tempFather = Node[randomUnvisitedNode][0];
-        Node[tempFather].erase(std::remove(Node[tempFather].begin(), Node[tempFather].end(), randomUnvisitedNode), Node[tempFather].end());
+        Node[tempFather].erase(remove(Node[tempFather].begin(), Node[tempFather].end(), randomUnvisitedNode), Node[tempFather].end());
         randomUnvisitedNode = tempFather;
     }while(randomUnvisitedNode != father);
-    //std::cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<std::endl;
+    //cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<endl;
     if (numVisited != N) return 0;
     return 1;
 }
 // Print Results
 void printFinal(){
     if (recursiveFoo() && randomWalk()){
-        std::sort(finalRoots.begin(),finalRoots.end());
+        sort(finalRoots.begin(),finalRoots.end());
         printf("CORONA %d\n", numFinalRoots);
         for (unsigned int i = 0; i < numFinalRoots - 1; i++) {
             printf("%d ",finalRoots[i]);
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
             Node[i].clear();
         }
         // Clear queue
-        singleEdgedNodes = std::queue<unsigned int>();
+        singleEdgedNodes = queue<unsigned int>();
         // Clear last Results
         finalRoots.clear();
     } 

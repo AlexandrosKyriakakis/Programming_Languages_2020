@@ -102,11 +102,15 @@ void printFinal(){
 }
 
 int main(int argc, char** argv) { 
+    // Faster I/O
     std::ios::sync_with_stdio(false);
     std::cin.tie(0);
+    
+    // Input from file
     FILE * pFile;
     pFile = fopen (argv[1], "r");
     unsigned int T = readLong(pFile);
+    
     // Input
     for (unsigned int i = 0; i < T; i++) {
         N = readLong(pFile);
