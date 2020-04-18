@@ -126,7 +126,6 @@ int main(int argc, char** argv) {
         numFinalRoots = 0;
         memset(degree,0,N*sizeof(unsigned int));
         memset(numOfChildren,0,N*sizeof(unsigned int));
-        memset(visited,0,N*sizeof(bool));
         
         for (unsigned int j = 0; j < M; j++) {
             unsigned int insertedNode1 = readLong(pFile);

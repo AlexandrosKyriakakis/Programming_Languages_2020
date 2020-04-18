@@ -79,8 +79,7 @@ bool randomWalk (){
         randomUnvisitedNode = tempFather;
     }while(randomUnvisitedNode != father);
     //std::cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<std::endl;
-    if (numVisited != N) return 0;
-    return 1;
+    return (numVisited == N)
 }
 // Print Results
 void printFinal(){
