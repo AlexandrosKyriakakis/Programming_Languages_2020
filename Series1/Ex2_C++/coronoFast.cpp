@@ -1,3 +1,5 @@
+// Αν έχω δυο κύκλους και μια ακμη αναμεσα τους δεν παιζει καλα!!!
+
 #include <iostream>
 #include <queue>
 #include <algorithm>
@@ -53,6 +55,7 @@ bool recursiveFoo(){
         Node[father].erase(std::remove(Node[father].begin(), Node[father].end(), leaf), Node[father].end());
         // Decrease fathers degree by 1 and check if fathers degree == 1
         if (--degree[father] == 1) singleEdgedNodes.push(father);
+        else if (degree[father] == 0) return 0;
         // Add num of leaf's chindrens to father + 1
         ++numOfChildren[father] += numOfChildren[leaf];
         numVisited++;
@@ -79,7 +82,7 @@ bool randomWalk (){
         randomUnvisitedNode = tempFather;
     }while(randomUnvisitedNode != father);
     //std::cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<std::endl;
-    return (numVisited == N)
+    return (numVisited == N);
 }
 // Print Results
 void printFinal(){

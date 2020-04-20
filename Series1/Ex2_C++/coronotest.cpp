@@ -1,3 +1,5 @@
+// Αν έχω δυο κύκλους και μια ακμη αναμεσα τους δεν παιζει καλα!!!
+
 #include <iostream>
 #include <queue>
 #include <algorithm>
@@ -25,17 +27,28 @@ long readLong(FILE* argv)
 }
 
 // Global Variables
-std::vector <unsigned int> Node[1000000];
+std::vector <unsigned int> *Node;
 std::queue <unsigned int> singleEdgedNodes;
-unsigned int degree[1000000];
-unsigned int numOfChildren[1000000];
-bool visited[1000000];
+unsigned int *degree;
+unsigned int *numOfChildren;
 std::vector<unsigned int> finalRoots;
 unsigned int N = 0;
 unsigned int father = 0; // to use as last element
 unsigned int numVisited = 0; // to check if all visited // edge-case graph is tree
 unsigned int numFinalRoots = 0; // for output
 
+void Constructor (){
+    Node = new std::vector <unsigned int>[N];
+    degree = new unsigned int[N];
+    numOfChildren = new unsigned int[N];
+}
+
+void Destructor (){
+    delete[] Node;
+    delete[] degree;
+    delete[] numOfChildren;
+
+}
 // Track children and find cycle
 bool recursiveFoo(){
     // Find all nodes with only one edge
@@ -56,7 +69,6 @@ bool recursiveFoo(){
         if (--degree[father] == 1) singleEdgedNodes.push(father);
         // Add num of leaf's chindrens to father + 1
         ++numOfChildren[father] += numOfChildren[leaf];
-        visited[leaf] = true;
         numVisited++;
     }
     return 1;
@@ -70,7 +82,6 @@ bool randomWalk (){
     do{
         // if degree > 2 not simple cycle
         if (degree[randomUnvisitedNode] > 2) return 0;
-        visited[randomUnvisitedNode] = true;
         numVisited++;
         
         // Add to final Result
@@ -82,8 +93,7 @@ bool randomWalk (){
         randomUnvisitedNode = tempFather;
     }while(randomUnvisitedNode != father);
     //std::cout << "Visited This Area numVisited -> " << numVisited << " N -> " << N <<std::endl;
-    if (numVisited != N) return 0;
-    return 1;
+    return (numVisited == N);
 }
 // Print Results
 void printFinal(){
@@ -119,7 +129,7 @@ int main(int argc, char** argv) {
             continue; 
         }
     // Initialize Graph
-        
+        Constructor();
         // Initialize arrays
         father = 0; 
         numVisited = 0;
@@ -139,10 +149,11 @@ int main(int argc, char** argv) {
         // Print Results
         printFinal();
         // Clear all vectors
-        for (unsigned int i = 0; i < N; i++) {
-            Node[i].clear();
-        }
+        //for (unsigned int i = 0; i < N; i++) {
+        //    Node[i].clear();
+        //}
         // Clear queue
+        Destructor();
         singleEdgedNodes = std::queue<unsigned int>();
         // Clear last Results
         finalRoots.clear();
