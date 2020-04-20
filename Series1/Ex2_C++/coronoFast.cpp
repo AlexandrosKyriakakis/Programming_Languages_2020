@@ -1,5 +1,3 @@
-// Αν έχω δυο κύκλους και μια ακμη αναμεσα τους δεν παιζει καλα!!!
-
 #include <iostream>
 #include <queue>
 #include <algorithm>
@@ -115,6 +113,10 @@ int main(int argc, char** argv) {
         unsigned int M = readLong(pFile);
         if (M != N) {
             printf ("NO CORONA\n");
+            for (unsigned int j = 0; j < M; j++) {
+            readLong(pFile);
+            readLong(pFile);
+            }
             continue; 
         }
     // Initialize Graph

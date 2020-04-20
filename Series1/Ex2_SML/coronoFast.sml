@@ -2,7 +2,9 @@ val node = Array.array(1000000,([]:int list));
 val degree = Array.array(1000000,0);
 val numOfChildren = Array.array(1000000,0);
 val lastFather_NumVisited_NumFinal = Array.array(3,0);
-
+(* 1 Να ελεγξουμε Ν=Μ *)
+(* 2 Να ελεγξουμε το NumVisited after randomwalk *)
+(*  *)
 fun printlist nil = ()
     | printlist x =
     let
@@ -112,7 +114,7 @@ fun recursiveFoo ([]) = ([])
                 end
         end;
 (* Check NumVisited and father before*) (* isFisible and ended must go *)
-fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots) =
+fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots, (n:int)) =
         let
             (*
             val _ = print("Got in RandoMWalk\n")
@@ -121,8 +123,8 @@ fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots) =
             (* if degree > 2 not simple cycle *)
             val degreeOfRdNode = Array.sub(degree,randomUnvisitedNode)
             (* Increase visited *)
-            val temp = Array.sub(lastFather_NumVisited_NumFinal,1) + 1
-            val stopError = Array.update(lastFather_NumVisited_NumFinal, 1, temp)
+            val num_visited = Array.sub(lastFather_NumVisited_NumFinal,1) + 1
+            val stopError = Array.update(lastFather_NumVisited_NumFinal, 1, num_visited)
             val addToAcum = Array.sub(numOfChildren,randomUnvisitedNode) + 1
             (* Take random neighboor *)
             val temp = Array.sub(node,randomUnvisitedNode)
@@ -133,12 +135,13 @@ fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots) =
             val stopError = Array.update(node,tempFather,temp)
         in
             if (degreeOfRdNode > 2) then ([0,0],0)
-            else (  if (ended) then (mergesort acum,numFinalRoots)
-                    else (randomWalk (tempFather = firstFather,tempFather, addToAcum::acum, numFinalRoots+1))
+            else (  if (ended andalso (num_visited = n+1)) then (mergesort acum,numFinalRoots)
+                    else if (ended andalso (num_visited <> n+1)) then ([0,0],0)
+                    else (randomWalk (tempFather = firstFather,tempFather, addToAcum::acum, numFinalRoots+1, n))
             )
         end;
 
-fun doTheJob (N) =
+fun doTheJob (N,M) =
     let
         (* 
         val _ = print ("got in DoTheJob\n"); 
@@ -154,8 +157,8 @@ fun doTheJob (N) =
         val orNum = Array.sub(node,Array.sub(lastFather_NumVisited_NumFinal,0)) = [];
         val isNotFisible = num orelse orNum;
     in
-        if (isNotFisible = true orelse stopError = [0,0]) then ([0,0],0)
-        else(randomWalk( false, firstFather, [], 0))
+        if (isNotFisible = true orelse stopError = [0,0] orelse N<>M) then ([0,0],0)
+        else(randomWalk( false, firstFather, [], 0, N))
     end;
     
 fun printRes (resList, resNum) = 
@@ -189,7 +192,7 @@ fun parse file =
                     (* val _ = printlist res; *)
                     val hi = make_adj (res);
                     (* val _ = print("made adj"); *)
-                    val resol = doTheJob(n);
+                    val resol = doTheJob(n,m);
                     (* val _ = print("did the job"); *)
                     val _ = printRes (#1 resol, #2 resol); 
                 in
