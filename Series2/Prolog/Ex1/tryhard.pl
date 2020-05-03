@@ -22,7 +22,7 @@ recursiveFoo(N, K, LastElem, CurrentList, ResultList) :-
             PowDelta is 1 << Delta,
             NewN is N - PowDelta, NewK is K - 1,
             CurrentList = [H|T], NewHead is H+1, append([NewHead],T, Re2NewCurrentList),
-                recursiveFoo(NewN, NewK, Delta, Re2NewCurrentList, ResultList)
+            recursiveFoo(NewN, NewK, Delta, Re2NewCurrentList, ResultList)
         )
     ).
 /* LastElem must be greater than Delta */
