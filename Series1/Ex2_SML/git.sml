@@ -123,10 +123,10 @@ fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots, (n:int)) =
             (* if degree > 2 not simple cycle *)
             val degreeOfRdNode = Array.sub(degree,randomUnvisitedNode)
         in
-            if (degreeOfRdNode <> 2) then ([0,0],0)
-            else   
+            if (degreeOfRdNode <> 1) then ([0,0],0)
+            else (  
                 let
-                    (* Increase visited *)
+                            (* Increase visited *)
                     val num_visited = Array.sub(lastFather_NumVisited_NumFinal,1) + 1
                     val stopError = Array.update(lastFather_NumVisited_NumFinal, 1, num_visited)
                     val addToAcum = Array.sub(numOfChildren,randomUnvisitedNode) + 1
@@ -138,10 +138,12 @@ fun randomWalk (ended, randomUnvisitedNode, acum, numFinalRoots, (n:int)) =
                     val temp = List.filter (fn x => (x <> randomUnvisitedNode)) temp
                     val stopError = Array.update(node,tempFather,temp)
                 in
-                    if (ended andalso (num_visited = n+1)) then (mergesort acum,numFinalRoots)
-                    else if (ended andalso (num_visited <> n+1)) then ([0,0],0)
+                
+                    if (ended andalso (num_visited <> n+1)) then ([0,0],0)
+                    else if (ended andalso (num_visited = n+1)) then (mergesort acum,numFinalRoots)
                     else (randomWalk (tempFather = firstFather,tempFather, addToAcum::acum, numFinalRoots+1, n))
                 end
+            )
         end;
 
 fun doTheJob (N,M) =
@@ -151,7 +153,6 @@ fun doTheJob (N,M) =
         *)
         val test = parseDegree(0, 0<N, [], N);
         (* val _ = printlist(test); *)
-        val _ = Array.update(lastFather_NumVisited_NumFinal,0,0)
         val stopError = recursiveFoo  (parseDegree(0, 0<N, [], N)) (* Returns None*)
         (* val _ = print ("got in 2\n"); *)
         val firstFather = Array.sub(lastFather_NumVisited_NumFinal,0)
@@ -208,4 +209,3 @@ fun parse file =
 
 val a = hd(CommandLine.arguments ())
 val _ = parse a;
-

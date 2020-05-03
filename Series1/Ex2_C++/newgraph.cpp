@@ -8,7 +8,7 @@
 // Fast input taken from Dimitris Fotakis
 char buffer[BSIZE];
 long bpos = 0L, bsize = 0L;
-long readLong(FILE* argv)
+long readLong(FILE* argv, bool isNothing)
 {
     long d = 0L, x = 0L; char c;
     while(1) {
@@ -18,7 +18,8 @@ long readLong(FILE* argv)
             bsize = fread(buffer, 1, BSIZE, argv);
         }
         c = buffer[bpos++];
-        if (c >= '0' && c <= '9') { x = x*10 + (c-'0'); d = 1; }
+        if (isNothing) return(c);
+        else if (c >= '0' && c <= '9') { x = x*10 + (c-'0'); d = 1; }
         else if (d == 1) return x;
     }
     return -1;
@@ -34,18 +35,19 @@ unsigned int N = 0;
 unsigned int father = 0; // to use as last element
 unsigned int numVisited = 0; // to check if all visited // edge-case graph is tree
 unsigned int numFinalRoots = 0; // for output
-
+bool isCycle = false;
 // Track children and find cycle
 bool recursiveFoo(){
     // Find all nodes with only one edge
     for (unsigned int i = 0; i < N; i++) {
         if (degree[i] == 0) return 0; 
-        else if (degree[i] == 1) singleEdgedNodes.push(i);
+        else if (degree[i] == 1) singleEdgedNodes.push(i); 
     }
     // Find num of children to all nodes
     while(!singleEdgedNodes.empty()){
         // Pop Front Leaf
         unsigned int leaf = singleEdgedNodes.front();
+        if(degree[leaf] != 1) return 0;
         singleEdgedNodes.pop();
         //
         father = Node[leaf][0];
@@ -105,20 +107,23 @@ int main(int argc, char** argv) {
     // Input from file
     FILE * pFile;
     pFile = fopen (argv[1], "r");
-    unsigned int T = readLong(pFile);
+    unsigned int T = readLong(pFile, false);
     
     // Input
     for (unsigned int i = 0; i < T; i++) {
-        N = readLong(pFile);
-        unsigned int M = readLong(pFile);
+        N = readLong(pFile, false);
+        unsigned int M = readLong(pFile, false);
         if (M != N) {
             printf ("NO CORONA\n");
-            for (unsigned int j = 0; j < M; j++) {
-            readLong(pFile);
-            unsigned int insertedNode2 = readLong(pFile);
+            unsigned int counter = 0;
+            while (counter < (M )) {
+              char a = readLong(pFile, true);
+              if (a == '\n') counter++;
             }
-            continue; 
-        }
+        
+        continue;
+        } 
+    
     // Initialize Graph
         
         // Initialize arrays
@@ -129,9 +134,9 @@ int main(int argc, char** argv) {
         memset(numOfChildren,0,N*sizeof(unsigned int));
         
         for (unsigned int j = 0; j < M; j++) {
-            unsigned int insertedNode1 = readLong(pFile);
+            unsigned int insertedNode1 = readLong(pFile, false);
             degree[insertedNode1-1]++;
-            unsigned int insertedNode2 = readLong(pFile);
+            unsigned int insertedNode2 = readLong(pFile, false);
             degree[insertedNode2-1]++;
             // Adding Edges <-> to graph
             Node[insertedNode1-1].push_back(insertedNode2-1);
@@ -149,4 +154,4 @@ int main(int argc, char** argv) {
         finalRoots.clear();
     } 
     return 0; 
-    } 
+  } 

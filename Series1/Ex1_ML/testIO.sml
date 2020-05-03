@@ -5,7 +5,8 @@ hd it; (* makes it Str from list of Strings*)
 val stream = TextIO.openIn it; (* Epens the file *)
 val a = next_String (1000000, stream); (*returns a vector of TextIO.vector*)
 val b = next_String (1000000, stream);
-
+fun charString = 
+    
 explode(a); (* makes the file "things" as list of chars *)
 hd it; (*Takes the first char*)
 Char.toString(it); (*Makes it String *)

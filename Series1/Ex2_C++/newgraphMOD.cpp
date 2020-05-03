@@ -113,12 +113,14 @@ int main(int argc, char** argv) {
         unsigned int M = readLong(pFile);
         if (M != N) {
             printf ("NO CORONA\n");
-            for (unsigned int j = 0; j < M; j++) {
-            readLong(pFile);
-            unsigned int insertedNode2 = readLong(pFile);
+            unsigned int counter = 0;
+            while (counter < (2*M )) {
+              if (getc(pFile) == '\n') counter++;
             }
-            continue; 
-        }
+        
+        continue;
+        } 
+    
     // Initialize Graph
         
         // Initialize arrays
@@ -149,4 +151,4 @@ int main(int argc, char** argv) {
         finalRoots.clear();
     } 
     return 0; 
-    } 
+  } 
