@@ -8,7 +8,7 @@ read_and_do(M, Steam, CurrentAnswers, Answers):-
     read_and_do(NewM, Steam, NewCurrentAnswers, Answers).
 
 
-powersof2(File, Answers) :-
+powers2(File, Answers) :-
     open(File, read, Stream),
     read_line(Stream, M),
     [H | _] = M,
