@@ -1,5 +1,4 @@
-% Taken from Pierre in https://stackoverflow.com/questions/9051781/how-can-make-array-in-prolog
-%:- module(arraysim, [insertAS/4,getAS/3]).
+mergesort%:- module(arraysim, [insertAS/4,getAS/3]).
 use_module(library(lists)).
 
 find_path(Index,Path):-
