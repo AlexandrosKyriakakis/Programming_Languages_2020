@@ -1,6 +1,9 @@
 % Taken from Pierre in https://stackoverflow.com/questions/9051781/how-can-make-array-in-prolog
 %:- module(arraysim, [insertAS/4,getAS/3]).
 use_module(library(lists)).
+set_prolog_stack(global, limit(100 000 000 000)).
+set_prolog_stack(trail,  limit(20 000 000 000)).
+set_prolog_stack(local,  limit(2 000 000 000)).
 
 find_path(Index,Path):-
     integer(Index),

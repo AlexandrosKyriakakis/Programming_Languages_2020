@@ -2,17 +2,11 @@ use_module(library(lists)).
 %use_module(library(statistics)).
 set_prolog_stack(global, limit(100 000 000 000)).
 set_prolog_stack(trail,  limit(20 000 000 000)).
-set_prolog_stack(local,  limit(4 000 000 000)).
-
-
+set_prolog_stack(local,  limit(2 000 000 000)).
 getAS(Value,Index,Tree):-
     arg(Index,Tree,Value),!.
 insertAS(Value,Index,Tree,Tree):-
     nb_setarg(Index,Tree,Value),!.
-
-
-
-
 recursiveFoo([], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, []):-!.
 recursiveFoo([0,0],Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,[0,0]):-!.
 recursiveFoo([Leaf|_], Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal, [0,0]):- getAS(LeafDegree, Leaf, Degree), LeafDegree =\= 1,!.
@@ -49,15 +43,15 @@ recursiveFoo([Leaf|Tail], Node, Degree, NumOfChildren, [_,NumVisited,NumFinal], 
             ;   recursiveFoo(Tail, ReNewNode, ReNewDegree, ReNewNumOfChildren, ReNewLastFather_NumVisited_NumFinal, NewNode, NewDegree, NewNumOfChildren, NewLastFather_NumVisited_NumFinal, Result)
                 )
     ),!.
-
-randomWalk(TempTemp,_,Acum,NumFinalRoots,N,_,_,[LastFather, NumVisited, _],_,ResultList, Result):-
-    (   NewNumVisited is NumVisited + 1,
-        NewN is N+1,
-        TempTemp =:= LastFather, NewNumVisited =:= NewN, msort(Acum,ResultList), Result = NumFinalRoots),!.
+randomWalk(_,RandomUnvisitedNode,_,_,_,Node,_,[_, _, _],_,[0,0],0):- getAS(DegreeOfRdNode,RandomUnvisitedNode,Node), DegreeOfRdNode = [],!.
 randomWalk(TempTemp,_,_,_,N,_,_,[LastFather, NumVisited, _],_,ResultList, Result):-
         (   NewNumVisited is NumVisited + 1,
             NewN is N+1,
             TempTemp = LastFather, NewNumVisited =\= NewN, ResultList = [0,0], Result = 0),!.
+randomWalk(TempTemp,_,Acum,NumFinalRoots,N,_,_,[LastFather, NumVisited, _],_,ResultList, Result):-
+    (   NewNumVisited is NumVisited + 1,
+        NewN is N+1,
+        TempTemp =:= LastFather, NewNumVisited =:= NewN, msort(Acum,ResultList), Result = NumFinalRoots),!.
 randomWalk(_,RandomUnvisitedNode,Acum,NumFinalRoots,N,Node,Degree,[LastFather, NumVisited, NumFinal],NumOfChildren,ResultList, Result):-
     (   NewNumVisited is NumVisited + 1,!,
         getAS(ToAcum,RandomUnvisitedNode,NumOfChildren),!,
@@ -71,7 +65,7 @@ randomWalk(_,RandomUnvisitedNode,Acum,NumFinalRoots,N,Node,Degree,[LastFather, N
         randomWalk(TempFather,TempFather,NewAccum,NewNumFinalRoots,N,NewNode,Degree,[LastFather,NewNumVisited,NumFinal],NumOfChildren, ResultList, Result),!
     ),!.
 
-randomWalk(_,RandomUnvisitedNode,_,_,_,Node,_,[_, _, _],_,[0,0],0):- getAS(DegreeOfRdNode,RandomUnvisitedNode,Node), DegreeOfRdNode = [],!.
+
 
 make_adj([], T, DT, RT, RDT) :-
     RT = T,!,
@@ -108,42 +102,40 @@ make_adj([First,Second|Rest], T, DT, RT, RDT):-
 parseDegree(Index, Accum, Index, Accum, _DT):-!.
 
 parseDegree(Index, Accum, N, Result, DT):-
-    Index =\= N,
-    NewIndex is Index + 1,
-    getAS(DegreeofIndex, Index, DT),
+    Index =\= N,!,
+    NewIndex is Index + 1,!,
+    getAS(DegreeofIndex, Index, DT),!,
     ( DegreeofIndex = nil
-    -> Result = [0,0]
+    -> Result = [0,0],!
     ; ( DegreeofIndex = 1
-      -> append([Index], Accum, NewAccum), parseDegree(NewIndex, NewAccum, N, Result, DT)
-        ;parseDegree(NewIndex, Accum, N, Result, DT)      
+      -> append([Index], Accum, NewAccum), parseDegree(NewIndex, NewAccum, N, Result, DT),!
+        ;parseDegree(NewIndex, Accum, N, Result, DT),!
       )
     ),!.
 
-read_and_do(_PreNode,_PreDegree,_NumOfChildren,0, _Stream, CurrentAnswers, Answers):-
+read_and_do(0, _Stream, CurrentAnswers, Answers):-
     reverse(CurrentAnswers, Answers),!.
 
-read_and_do(PreNode,PrePreDegree,NumOfChildren,T, Stream, CurrentAnswers, Answers):-
+read_and_do(T, Stream, CurrentAnswers, Answers):-
     read_line(Stream, [N, M]),!,
     read_edges(Stream, M, [], InputList),!,
-    NewN is N+1,!,
-    init(PrePreDegree, 1,  NewN, PreDegree),!,
+    functor(PreNode, array1, N),!,
+    functor(PreDegree, array2, N),!,
     make_adj(InputList, PreNode, PreDegree, Node, Degree ),!,
-    dotheactualjob(N, M, Node, Degree,NumOfChildren, JobResult, JobResultList),!,
+    dotheactualjob(N, M, Node, Degree, JobResult, JobResultList),!,
     (JobResult =\= 0 
     -> append([[JobResult,JobResultList ]],CurrentAnswers, NewCurrentAnswers),!
     ; append(["'NO CORONA'"], CurrentAnswers, NewCurrentAnswers),!
     ),!,
     NewT is T - 1,!,
-    read_and_do(PreNode,PreDegree,NumOfChildren,NewT, Stream, NewCurrentAnswers, Answers),!.
+    read_and_do(NewT, Stream, NewCurrentAnswers, Answers),!.
+
 coronograph(File, Answers) :-
     open(File, read, Stream),!,
     read_line(Stream, T),!,
     [H | _] = T,!,
-    functor(PreNumOfChildren, array3, 1000000),!,
-    functor(PreNode, array1, 1000000),!,
-    functor(PreDegree, array2, 1000000),!,
-    read_and_do(PreNode,PreDegree,PreNumOfChildren,H, Stream, [], Answers),!.
-
+    read_and_do(H, Stream, [], Answers),!.
+run :- coronograph('coronagraph.in12', Answers), writeln(Answers), halt.
 read_edges(_Stream, 0, CurrList, InputList):-
     reverse(CurrList,InputList),!.
 
@@ -166,19 +158,13 @@ init(Array,I,N,NewArray):-
         ; insertAS(0,I,Array,ReNewArray), NewI is I +1,!,
          init(ReNewArray,NewI,N,NewArray),!
     ),!.
-initMpla(Array,I,N,NewArray):-
-    (
-        N =:= I -> NewArray = Array,!
-        ; insertAS([],I,Array,ReNewArray), NewI is I +1,!,
-         init(ReNewArray,NewI,N,NewArray),!
-    ),!.
-dotheactualjob(N, M, _, _, _, 0, [0,0]):- N =\= M,!.
 
-dotheactualjob(N, N, Node, Degree, PreNumOfChildren,JobResult, JobResultList):-
+dotheactualjob(N, M, _, _, 0, [0,0]):- N =\= M,!.
+
+dotheactualjob(N, N, Node, Degree, JobResult, JobResultList):-
     NewN is N + 1,!,
-    
     parseDegree(1,[], NewN, ParseResult, Degree),!,
-    
+    functor(PreNumOfChildren, array3, N),!,
     init(PreNumOfChildren, 1,  NewN, NumOfChildren),!,
     recursiveFoo(ParseResult, Node, Degree, NumOfChildren, [1,0,0], NewNode, NewDegree, NewNumOfChildren, NewLastSomething, ReRE),!,
     [LastLastFather,LastNumVisited, NumFinal]= NewLastSomething,!,
