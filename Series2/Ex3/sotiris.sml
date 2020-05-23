@@ -134,10 +134,10 @@ fun printGrid i N M grid =
       end
     )
 (*
-val _ = print(Int.toString(15)^"\n"^"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+val _ = printGrid 0 N M cage
 *)
 val _ = recursiveFoo([virus],N,M);
-val _ = printGrid 0 N M cage
+val _ = print(Int.toString(15)^"\n"^"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
 (*
 Minor Optimization: Do REal BFS with LIFO Done and Done!!!
 *)
