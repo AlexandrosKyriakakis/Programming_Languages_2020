@@ -1,17 +1,64 @@
+
+(* Πηγαινει πάνω κατω αριστερα δεξια και αφου ελεγξει με άλλη συνάρτηση αν 
+    ειναι fisible προσθετει τις τουπλες στην ουρα *)
+
+(*
+S . . . . . . W
+. . . . . . . X
+X . X . . . . .
+W X . . . . . .
+. . . . . . . T 
+        W    W
+S
+7 6 5 4 3 2 1 0
+8 7 6 5 4 3 2 X
+X 8 X 6 5 4 3 4
+W X 4 5 6 5 4 5
+1 2 3 4 5 6 5 T 
+S
++0 +1 +2 +3 \3 \2 \1 \0
++1 +2 +3 +4 \4 \3 \2 \X
+\X +3 \T +5 \5 \4 \3 \4
+\W \X \4 \5 \6 \5 \4 \5
+\1 \2 \3 \4 \5 \6 \5 \6 
+
+
+
+
+
+
+        W    W
+QUE [(7,0),(0,3)]
+AIRPORTS [air1,air2,...]
+RECURSION (hd(QUE)) 
+        val c = timh_pinaka((7,0)) 
+        gia kathe ena i -> [(8,0),(6,0),(7,-1),(7,1)] -> (R, L, U, D)
+        if (allowed(i,c) && timh_pinaka(i) > c+1) -> timi_pinaka(i) = c+1
+            QUE.append(i)
+        AIRPORTS !!!
+
+ALLOWED(N,M,(a,b), QUE, c )
+    (* vgainw ektos orion*)
+    val out_of_bounds = (a<0) orelse (b<0) orelse (a > N) orelse (b > N)
+    (* einai AIRPORT*)
+    if timh_pinaka(a,b) == -2 -> gia kathe j in [AIRPORTS] 
+                                    timi_pinaka(c + 5)
+                                    kai QUEUE.append(AIRPORTS)
+*)
+
+
 (*FIXME LIST allowed check parrent before itteration*)
 val new = Array2.array;
 val update = Array2.update;
 val sub = Array2.sub;
 val cage = new(1000,1000,0:int);
-val newcage = new(1000,1000,valOf Int.maxInt);
 val a = hd(CommandLine.arguments ());
 fun readChr input = Option.valOf(TextIO.scanStream String.scan input);
 val inStream = TextIO.openIn a;
 (* References *)
 val foundTheEnd = ref false;
 val adding = ref 2;
-val swtos  = ref false;
-val counter = ref 1;
+
 fun   readline ((#"X")::tail) i j airports start endH virus = (update(cage, i, j, ~1) ;                 readline tail i (j + 1) airports start endH virus)
     | readline ((#"S")::tail) i j airports start endH virus = (update(cage, i, j, valOf Int.maxInt) ;   readline tail i (j + 1) airports [i,j] endH virus)
     | readline ((#".")::tail) i j airports start endH virus = (update(cage, i, j, valOf Int.maxInt) ;   readline tail i (j + 1) airports start endH virus)
@@ -37,7 +84,7 @@ fun recursiveFoo ([]:int list list, N, M) = []
 |   recursiveFoo ([i,j]::tail, N, M) = 
     let
         val cell_price = sub(cage,i,j)
-        val neighbors = [[i+1,j],[i,j-1],[i,j+1],[i-1,j]]
+        val neighbors = [[i,j+1],[i,j-1],[i-1,j],[i+1,j]]
         
         fun choose ([],acum) = acum
             | choose ([neighbor_i,neighbor_j]::tail2,acum) = 
@@ -46,7 +93,6 @@ fun recursiveFoo ([]:int list list, N, M) = []
                     let 
                         val _ = update(cage,neighbor_i,neighbor_j,cell_price+(!adding))
                         val _ = if ([neighbor_i,neighbor_j] = endH) then (foundTheEnd := true) else ()
-                        val _ = if (!swtos) then (update(newcage,neighbor_i,neighbor_j,(!counter)); counter := !counter+1) else ()
                     in
                         choose(tail2, acum@[[neighbor_i,neighbor_j]])
                     end
@@ -77,45 +123,60 @@ and allowed (N,M,[a,b],cell_price) =
         else (true);
 
 
+fun printGrid i N M grid =
+  if (i >= N+1) then ()
+  else
+    (
+      let
+        fun printRow j M =
+          if (j >= M + 1) then ()
+          else (print (Int.toString(Array2.sub(grid, i, j))); print(" ") ; printRow (j+1) M)
+      in
+        printRow 0 M;
+        print("\n");
+        printGrid (i + 1) N M grid
+      end
+    )
+
 fun allowedHome (N,M,[a,b]) = 
     if ( (a<0) orelse (b<0) orelse (a > N) orelse (b > M) orelse (sub(cage,a,b) < 0) )
     then (false) else (true)
-
+        
 fun returnHome ([i, j],revSol: char list, numSol) = 
-    let 
-        val up = if allowedHome(N,M,[i+1,j]) then sub(newcage,i+1,j) else (valOf Int.maxInt)
-        val right = if allowedHome(N,M,[i,j-1]) then sub(newcage,i,j-1) else (valOf Int.maxInt)
-        val left = if allowedHome(N,M,[i,j+1]) then sub(newcage,i,j+1) else (valOf Int.maxInt)
-        val down = if allowedHome(N,M,[i-1,j]) then sub(newcage,i-1,j) else (valOf Int.maxInt)
-    in
-        if ( allowedHome(N,M,[i+1,j]) andalso (sub(cage,i+1,j) = (sub(cage,i,j)-1)) andalso up<down andalso up<left andalso up<right  )
-        then (returnHome([i+1,j],(#"U")::revSol,numSol+1)) 
+    if ( allowedHome(N,M,[i,j-1]) andalso (sub(cage,i,j-1) = (sub(cage,i,j)-1)) )
+    then ( print("R\n") ;returnHome([i,j-1],(#"R")::revSol,numSol+1)) 
+    else (
+        if ( allowedHome(N,M,[i,j+1]) andalso (sub(cage,i,j+1) = (sub(cage,i,j)-1)) )
+        then (print("L\n"); returnHome([i,j+1],(#"L")::revSol,numSol+1)  )
         else (
-            if ( allowedHome(N,M,[i,j-1]) andalso (sub(cage,i,j-1) = (sub(cage,i,j)-1)) andalso right<down andalso right<left andalso right<up)
-            then (returnHome([i,j-1],(#"R")::revSol,numSol+1)  )
+            if ( allowedHome(N,M,[i-1,j]) andalso (sub(cage,i-1,j) = (sub(cage,i,j)-1)) )
+            then ( print("D\n"); returnHome([i-1,j],(#"D")::revSol,numSol+1) )
             else (
-                if ( allowedHome(N,M,[i,j+1]) andalso (sub(cage,i,j+1) = (sub(cage,i,j)-1)) andalso left<down andalso left<up andalso left<right)
-                then ( returnHome([i,j+1],(#"L")::revSol,numSol+1) )
+                if ( allowedHome(N,M,[i+1,j]) andalso (sub(cage,i+1,j) = (sub(cage,i,j)-1)) )
+                then (  print("U\n") ; returnHome([i+1,j],(#"U")::revSol,numSol+1))
                 else (
-                    if ( allowedHome(N,M,[i-1,j]) andalso (sub(cage,i-1,j) = (sub(cage,i,j)-1)) andalso down<up andalso down<left andalso down<right)
-                    then ( returnHome([i-1,j],(#"D")::revSol,numSol+1))
-                    else (
-                        if ([i, j] = start) then (revSol, numSol)
-                        else ([#"a",#"l",#"e",#"x"],42)
-                    )
+                    if ([i, j] = start) then (revSol, numSol)
+                    else ([#"a",#"l",#"e",#"x"],42)
                 )
             )
         )
-    end
-
+    )
+(* APOTHIKI
+val _ = print(Int.toString(15)^"\n"^"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+val _ = printGrid 0 N M cage
+*)
 val _ = recursiveFoo([virus],N,M);
 val [start_i, start_j] = start;
 val _ = update(cage,start_i,start_j,0);
-val _ = update(newcage,start_i,start_j,0);
 val _ = foundTheEnd := false;
 val _ = adding := 1;
-val _ = swtos := true;
 val _ = recursiveFoo([start],N,M);
+val _ = if (!foundTheEnd) then () else ( print("IMPOSSIBLE\n") );
+val (ResultList, ResultNum) = returnHome(endH,[],0)
+val _ = print(Int.toString(ResultNum)^"\n"^implode(ResultList) ^ "\n")
 
-val _ = if (!foundTheEnd) then (let val (ResultList, ResultNum) = returnHome(endH,[],0) val _ = print(Int.toString(ResultNum)^"\n"^implode(ResultList) ^ "\n") in () end) else ( print("IMPOSSIBLE\n") );
-
+(*
+val _ = printGrid 0 N M cage
+Minor Optimization: Do REal BFS with LIFO -> Done and Done!!!
+με λεξικογραφική σειρά: down, left, right, up. FIXME
+*)
