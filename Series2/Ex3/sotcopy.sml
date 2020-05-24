@@ -180,3 +180,30 @@ val _ = printGrid 0 N M cage
 Minor Optimization: Do REal BFS with LIFO -> Done and Done!!!
 με λεξικογραφική σειρά: down, left, right, up. FIXME
 *)
+fun printGrid i N M grid =
+  if (i >= N+1) then ()
+  else
+    (
+      let
+        fun printRow j M =
+          if (j >= M + 1) then ()
+          else (print (Int.toString(Array2.sub(grid, i, j))); print(" ") ; printRow (j+1) M)
+      in
+        printRow 0 M;
+        print("\n");
+        printGrid (i + 1) N M grid
+      end
+    );
+fun copyArray i N M =
+  if (i >= N+1) then ()
+  else
+    (
+      let
+        fun printRow j M =
+          if (j >= M + 1) then ()
+          else (update(newcage,i,j,sub(cage,i,j)) ; printRow (j+1) M)
+      in
+        printRow 0 M;
+        copyArray (i + 1) N M; ()
+      end
+    );

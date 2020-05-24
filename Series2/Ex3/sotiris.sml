@@ -19,17 +19,16 @@ fun   readline ((#"X")::tail) i j airports start endH virus = (update(cage, i, j
     | readline ((#"T")::tail) i j airports start endH virus = (update(cage, i, j, valOf Int.maxInt) ;   readline tail i (j + 1) airports start [i,j] virus)
     | readline ((#"A")::tail) i j airports start endH virus = (update(cage, i, j, ~2) ;                 readline tail i (j + 1) ([i,j]::airports) start endH virus)
     | readline [] i j airports start endH virus = readmap inStream (i+1) j airports start endH virus
-    (*| readline _ _ _ = ()*)
     
 and readmap inStream i j airports start endH virus =
-let
-    val test = readChr inStream (* String *)
-    val _ = TextIO.inputLine inStream
-    val explodedtest = explode test  (* List of chars *)
-in
-    if (explodedtest = []) then (i-1, j-1, airports, start, endH, virus)
-    else readline explodedtest i 0 airports start endH virus
-end
+    let
+        val test = readChr inStream (* String *)
+        val _ = TextIO.inputLine inStream
+        val explodedtest = explode test  (* List of chars *)
+    in
+        if (explodedtest = []) then (i-1, j-1, airports, start, endH, virus)
+        else readline explodedtest i 0 airports start endH virus
+    end
 
 val (N, M, airports, start, endH, virus) = readmap inStream 0 0 [] [] [] []
 
