@@ -1,0 +1,24 @@
+nodedef> name VARCHAR, label VARCHAR, group VARCHAR, calls INTEGER, time DOUBLE, memory_in INTEGER, memory_out INTEGER, color VARCHAR, width DOUBLE
+__main__,__main__,__main__,1,0,0,0,'229,229,229',1.0
+<module>,<module>,<module>,1,0.013581037521362305,0,0,'229,76,229',3.0
+do_the_job,do_the_job,do_the_job,1,0.013274192810058594,0,0,'223,79,229',2.9712302895182776
+InputMap,InputMap,InputMap,1,0.0018532276153564453,0,0,'208,223,229',1.4212860173120003
+_handle_fromlist,_handle_fromlist,_handle_fromlist,1,6.9141387939453125e-06,0,0,'229,229,229',1.0017487980082995
+readData,readData,readData,60,0.0004839897155761719,0,0,'213,225,229',1.1188660797050745
+<listcomp>,<listcomp>,<listcomp>,1,9.059906005859375e-06,0,0,'229,229,229',1.0022912176509275
+VirusSpread,VirusSpread,VirusSpread,1,0.00559687614440918,0,0,'166,177,229',2.0707872429138945
+recursiveFoo,recursiveFoo,recursiveFoo,104,0.00862264633178711,0,0,'173,113,229',2.4752302284107985
+allowed,allowed,allowed,416,0.0010638236999511719,0,0,'154,141,229',1.2525527105597154
+SotosSpread,SotosSpread,SotosSpread,1,0.004617929458618164,0,0,'177,193,229',1.9202392386389089
+edgedef> node1 VARCHAR, node2 VARCHAR, label VARCHAR, labelvisible VARCHAR, directed BOOLEAN, color VARCHAR, width DOUBLE
+__main__,<module>,1,true,true,'178,59,178',0.004807692307692308
+<module>,do_the_job,1,true,true,'173,62,178',0.004807692307692308
+do_the_job,InputMap,1,true,true,'162,173,178',0.004807692307692308
+do_the_job,<listcomp>,1,true,true,'178,178,178',0.004807692307692308
+do_the_job,VirusSpread,1,true,true,'129,137,178',0.004807692307692308
+do_the_job,SotosSpread,1,true,true,'137,150,178',0.004807692307692308
+InputMap,_handle_fromlist,1,true,true,'178,178,178',0.004807692307692308
+InputMap,readData,60,true,true,'165,175,178',0.28846153846153844
+VirusSpread,recursiveFoo,56,true,true,'128,94,178',0.2692307692307692
+recursiveFoo,allowed,416,true,true,'120,109,178',2.0
+SotosSpread,recursiveFoo,48,true,true,'127,96,178',0.23076923076923078
