@@ -1,5 +1,4 @@
-#import numpy as np
-#from array import array
+
 def InputMap() :
     from sys import maxsize, argv
     mymax = maxsize
@@ -40,57 +39,80 @@ def InputMap() :
 def do_the_job ():
     # Global Variables
     N, M, cage, start, end, virus, airports = InputMap()
-    #cage = arr.array('i',cage)
     adding = 2
     foundEnd = False
     swtos = False
     counter = 1
-    newcage = [([0]*(M+1)) for i in range(N+1)]
-    queue = []
+    newcage = list(map(lambda i:([0]*(M+1)),range(N+1)))
+    from collections import deque
+    queue = deque()
+    
     def allowed (cell): return (((cell[0]>-1) and (cell[0] <= N) and (cell[1] > -1) and (cell[1] <= M)))
-    def recursiveFoo(cell):
+    def recursiveFoo1(cell):
+        nonlocal counter, foundEnd, recFoo
+        i,j = cell
+        cell_price = cage[i][j]
+        for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
+            currNeighbor = cage[neighbor_i][neighbor_j]
+            if (currNeighbor > (cell_price + adding) ):
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+                queue.append([neighbor_i,neighbor_j])
+            elif (currNeighbor == -2):
+                recFoo = recursiveFoo2
+                queueAppend = queue.append
+                for airport_i,airport_j in airports:
+                    cage[airport_i][airport_j] = cell_price + adding + 5
+                    queueAppend([airport_i,airport_j])
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+    
+    recFoo = recursiveFoo1
+    
+    def recursiveFoo2(cell):
         nonlocal counter, foundEnd
         i,j = cell
         cell_price = cage[i][j]
         for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
             currNeighbor = cage[neighbor_i][neighbor_j]
             if (currNeighbor > (cell_price + adding) ):
-                if (swtos):
-                    if ([neighbor_i,neighbor_j] == end): foundEnd = True
-                    newcage[neighbor_i][neighbor_j] = counter
-                    counter += 1
                 cage[neighbor_i][neighbor_j] = cell_price + adding
                 queue.append([neighbor_i,neighbor_j])
-            elif (currNeighbor == -2):
-                queueAppend = queue.append
-                for airport_i,airport_j in airports:
-                    cage[airport_i][airport_j] = cell_price + adding + 5
-                    queueAppend([airport_i,airport_j])
+    
+    def recursiveFoo3(cell):
+        nonlocal counter, foundEnd
+        i,j = cell
+        cell_price = cage[i][j]
+        for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
+            currNeighbor = cage[neighbor_i][neighbor_j]
+            if (currNeighbor > (cell_price + adding) ):
+                if ([neighbor_i,neighbor_j] == end): foundEnd = True
+                newcage[neighbor_i][neighbor_j] = counter
+                counter += 1
                 cage[neighbor_i][neighbor_j] = cell_price + adding
-
+                queue.append([neighbor_i,neighbor_j])
+    
     # Virus spreading
     def VirusSpread ():
         nonlocal queue,virus
-        queue = [virus]
+        queue.append(virus)
         while queue: 
-            currentCell = queue.pop(0)
-            recursiveFoo(currentCell)
+            currentCell = queue.popleft()
+            recFoo(currentCell)
 
     def SotosSpread():
         nonlocal swtos, adding, cage, start, queue
-        swtos = True
         cage[start[0]][start[1]] = 0
-        queue = [start]
+        queue.append(start)
         adding = 1
 
         # Sotiris spreading
         while queue: 
-            currentCell = queue.pop(0)
-            recursiveFoo(currentCell)
+            currentCell = queue.popleft()
+            recursiveFoo3(currentCell)
     # Apothiki
     # print(N,M, start, end, airports)
     VirusSpread()
     SotosSpread()
+    #import numpy as np
     #print(np.array(cage))
     #print (np.array(newcage))
     if (foundEnd):

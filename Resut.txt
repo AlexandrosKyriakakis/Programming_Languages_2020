@@ -1,0 +1,35 @@
+15
+RRRRRRRRRRRRRRRRRRRRRRRR
+         5184952 function calls in 2.306 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1009(_handle_fromlist)
+        1    0.000    0.000    0.000    0.000 _bootlocale.py:33(getpreferredencoding)
+        1    0.000    0.000    0.000    0.000 codecs.py:260(__init__)
+        1    0.000    0.000    0.000    0.000 codecs.py:309(__init__)
+      123    0.000    0.000    0.001    0.000 codecs.py:319(decode)
+        1    0.028    0.028    0.323    0.323 copyBeforeBig.py:100(SotosSpread)
+   996003    0.232    0.000    0.232    0.000 copyBeforeBig.py:13(readData)
+        1    0.016    0.016    2.306    2.306 copyBeforeBig.py:2(<module>)
+        1    0.134    0.134    0.368    0.368 copyBeforeBig.py:2(InputMap)
+        1    0.000    0.000    2.290    2.290 copyBeforeBig.py:39(do_the_job)
+      997    0.006    0.000    0.006    0.000 copyBeforeBig.py:46(<lambda>)
+  2391796    0.494    0.000    0.494    0.000 copyBeforeBig.py:49(allowed)
+    81006    0.153    0.000    0.226    0.000 copyBeforeBig.py:50(recursiveFoo1)
+   421268    0.772    0.000    1.143    0.000 copyBeforeBig.py:69(recursiveFoo2)
+    95675    0.193    0.000    0.280    0.000 copyBeforeBig.py:79(recursiveFoo3)
+        1    0.141    0.141    1.594    1.594 copyBeforeBig.py:93(VirusSpread)
+      123    0.001    0.000    0.001    0.000 {built-in method _codecs.utf_8_decode}
+        1    0.000    0.000    0.000    0.000 {built-in method _locale.nl_langinfo}
+        1    0.000    0.000    2.306    2.306 {built-in method builtins.exec}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+      997    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+        1    0.000    0.000    0.000    0.000 {built-in method io.open}
+   599000    0.037    0.000    0.037    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+   597949    0.099    0.000    0.099    0.000 {method 'pop' of 'list' objects}
+
+
