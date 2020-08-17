@@ -30,22 +30,45 @@ def recursiveFoo(cell):  # cell = [i,j,k]
         complemented = currentComplementedInput[j+1]
         currentChar = originalChar if (k == 0) else complemented
         state = possibleStates[i]  # Ex. ACG
+
+        # Not included in right stack
+        # FIXME den exw swsta th leksikografikh seira
+
+        if (currentChar not in state):
+            nextMove = DPArray[i][j][k] + "rp"
+            new_i = indexingPossibleStates[possibleStates[i]
+                                           [::-1] + currentChar]
+            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
+                DPArray[new_i][j+1][k] = nextMove
+                queue.append([new_i, j+1, k])
+
+        if (state[0] == currentChar):
+            nextMove = DPArray[i][j][k] + "rp"
+            new_i = indexingPossibleStates[possibleStates[i][::-1]]
+            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
+                DPArray[new_i][j+1][k] = nextMove
+                queue.append([new_i, j+1, k])
+        if (currentChar not in state):
+            nextMove = DPArray[i][j][k] + "p"
+            new_i = indexingPossibleStates[possibleStates[i] + currentChar]
+            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
+                DPArray[new_i][j+1][k] = nextMove
+                queue.append([new_i, j+1, k])
         if (state[-1] == currentChar):  # G == current char
             nextMove = DPArray[i][j][k] + "p"
             if (DPArray[i][j+1][k] == "" or len(DPArray[i][j+1][k]) > len(nextMove)):
                 DPArray[i][j+1][k] = nextMove
                 queue.append([i, j+1, k])
-        if (state[-1] == complement[currentChar]):  # G == complemented current char
-            nextMove = DPArray[i][j][k] + "cp"
-            if (DPArray[i][j+1][int(not k)] == "" or len(DPArray[i][j+1][int(not k)]) > len(nextMove)):  # FIXME ">="
-                DPArray[i][j+1][int(not k)] = nextMove
-                queue.append([i, j+1, int(not k)])
-        if (state[0] == currentChar):
-            nextMove = DPArray[i][j][k] + "rp"
-            new_i = indexingPossibleStates[possibleStates[i][::-1]]
-            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) >= len(nextMove)):
-                DPArray[new_i][j+1][k] = nextMove
-                queue.append([new_i, j+1, k])
+
+        if (complement[currentChar] not in state):
+            nextMove = DPArray[i][j][k] + "crp"
+            new_k = int(not k)
+            new_i = indexingPossibleStates[possibleStates[i]
+                                           [::-1] + complement[currentChar]]
+            if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) > len(nextMove)):
+                DPArray[new_i][j+1][new_k] = nextMove
+                queue.append([new_i, j+1, new_k])
+
         if (state[0] == complement[currentChar]):
             nextMove = DPArray[i][j][k] + "crp"
             new_i = indexingPossibleStates[possibleStates[i][::-1]]
@@ -54,14 +77,6 @@ def recursiveFoo(cell):  # cell = [i,j,k]
                 DPArray[new_i][j+1][new_k] = nextMove
                 queue.append([new_i, j+1, new_k])
 
-        # Not included in right stack
-        # FIXME den exw swsta th leksikografikh seira
-        if (currentChar not in state):
-            nextMove = DPArray[i][j][k] + "p"
-            new_i = indexingPossibleStates[possibleStates[i] + currentChar]
-            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
-                DPArray[new_i][j+1][k] = nextMove
-                queue.append([new_i, j+1, k])
         if (complement[currentChar] not in state):
             nextMove = DPArray[i][j][k] + "cp"
             new_k = int(not k)
@@ -70,20 +85,12 @@ def recursiveFoo(cell):  # cell = [i,j,k]
             if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) > len(nextMove)):  # FIXME ">="
                 DPArray[new_i][j+1][new_k] = nextMove
                 queue.append([new_i, j+1, new_k])
-        if (currentChar not in state):
-            nextMove = DPArray[i][j][k] + "rp"
-            new_i = indexingPossibleStates[possibleStates[i]
-                                           [::-1] + currentChar]
-            if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) >= len(nextMove)):
-                DPArray[new_i][j+1][k] = nextMove
-                queue.append([new_i, j+1, k])
-        if (complement[currentChar] not in state):
-            nextMove = DPArray[i][j][k] + "crp"
-            new_i = indexingPossibleStates[possibleStates[i]
-                                           [::-1] + complement[currentChar]]
-            if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) >= len(nextMove)):
-                DPArray[new_i][j+1][new_k] = nextMove
-                queue.append([new_i, j+1, new_k])
+
+        if (state[-1] == complement[currentChar]):  # G == complemented current char
+            nextMove = DPArray[i][j][k] + "cp"
+            if (DPArray[i][j+1][int(not k)] == "" or len(DPArray[i][j+1][int(not k)]) > len(nextMove)):  # FIXME ">="
+                DPArray[i][j+1][int(not k)] = nextMove
+                queue.append([i, j+1, int(not k)])
 
 
 def run():
@@ -119,5 +126,3 @@ for _ in range(N):
 
 
 # Assume that input is at the right side of the right stack
-
-# FIXME prepei na valw kai tis periptwseis poy den periexetai sto state
