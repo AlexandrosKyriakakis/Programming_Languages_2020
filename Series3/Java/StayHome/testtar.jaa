@@ -1,0 +1,94 @@
+
+//package Series3.Java.StayHome;
+import java.io.*;
+import java.util.*;
+
+import javafx.util.Pair;
+import sun.security.ec.point.ProjectivePoint.Mutable;
+
+public class Input {
+
+   public static void main(String[] args) {
+      // Initializations
+      ArrayList<ArrayList<Integer>> cage = new ArrayList<>();
+      ArrayList<Pair<Integer, Integer>> airports = new ArrayList<>();
+      ArrayList<Integer> start = new ArrayList<Integer>(2);
+      ArrayList<Integer> end = new ArrayList<Integer>(2);
+      ArrayList<Integer> virus = new ArrayList<Integer>(2);
+      // Creating the dictionary
+      Map<String, Integer> map = new HashMap<String, Integer>();
+
+      map.put("X", -1);
+      map.put("S", Integer.MAX_VALUE);
+      map.put("T", Integer.MAX_VALUE);
+      map.put(".", Integer.MAX_VALUE);
+      map.put("W", 0);
+      map.put("A", -2);
+      // Input data from file
+      String inputArg = args[0];
+      try {
+         BufferedReader in = new BufferedReader(new FileReader(inputArg));
+         String line = in.readLine();
+         String[] lineSeparated = line.split("");
+
+         int M = lineSeparated.length;
+         int N = 0;
+
+         while (line != null) {
+            cage.add(new ArrayList<>());
+            for (int i = 0; i < M; i++) {
+               String cur = lineSeparated[i];
+               if (cur.equals("A")) {
+                  airports.add(new Pair<Integer, Integer>(N, i));
+               }
+               if (cur.equals("S")) {
+                  start.add(N);
+                  start.add(i);
+               }
+               if (cur.equals("T")) {
+                  end.add(N);
+                  end.add(i);
+               }
+               if (cur.equals("W")) {
+                  virus.add(N);
+                  virus.add(i);
+               }
+               cage.get(N).add(map.get(cur));
+            }
+            line = in.readLine();
+            if (line != null)
+               lineSeparated = line.split("");
+            N++;
+         }
+
+         System.out.println(end);
+         in.close();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
+      for (ArrayList i : cage) {
+         System.out.print(i);
+      }
+      // Pair<Integer, Integer> p = new Pair<Integer, Integer>(1, 2);
+   }
+
+}
+
+/*
+ * // } // import java.io.*;
+ * 
+ * public class ReadFromFile2 { public static void main(String[] args) throws
+ * Exception { // We need to provide file path as the parameter: // double
+ * backquote is to avoid compiler interpret words // like \test as \t (ie. as a
+ * escape sequence) File file = new
+ * File("C:\\Users\\pankaj\\Desktop\\test.txt");
+ * 
+ * BufferedReader br = new BufferedReader(new FileReader(file));
+ * 
+ * String st; while ((st = br.readLine()) != null) System.out.println(st); } }
+ * 
+ * public class Input {
+ * 
+ * }
+ */

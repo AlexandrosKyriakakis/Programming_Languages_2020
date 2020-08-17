@@ -1,0 +1,84 @@
+Alexandros Kyriakakis 03112163
+1.
+   H γραμματική που διδεται λύνει το πρόβλημα του ξεκρέμαστου
+   else διότι διότι κάθε φορά που θα υπάρχει else στην εντολή
+   τότε αυτο θα αναφέρετε στο κοντινότερο if αριστερα του.
+2. 
+   α)
+"""sml
+fun s ls =
+  let fun c [] a = a
+         (*val myval =  *)
+         | c (x :: r) a = c r (r :: a)
+   in 
+      c ls []
+   end;
+"""
+   β) 
+
+"""prolog
+p(X) :-
+    member(X, [2, 3, 5]).
+q(Y) :-
+    member(Y, [17, 24, 42, 51, 71]).
+r(X, Y) :-
+    p(X),
+    !,
+    q(Y),
+    Y mod X=:=0.
+"""
+   γ) 42 ΑΜ2 ΑΜ3 17 42 ΑΜ2 = 42 6 3 17 42 6
+   γ1) 42 ΑΜ2 ΑΜ3 17 ΑΜ3 17 = 42 6 3 17 3 17
+   
+   δ) ΑΜ: 03112163
+   δ1) ΑΜ2 ΑΜ2 42 ΑΜ3 = 6 6 42 3 
+   δ2) ΑΜ2 ΑΜ3 ΑΜ2 ΑΜ3 = 6 3 6 3
+3.
+   a     b     c     j     k
+α  3     16    9     3     6
+β  21    21    9     21    6
+γ  3     16    9     16    6  
+δ  26    26    32    26    6
+
+4.
+"""sml
+fun auxOddEven ([], last ,acum, curmax)= curmax
+   | auxOddEven (h::t, last ,acum, curmax)= 
+      if ((h mod 2) = (last mod 2)) then (
+         if (acum > curmax) then (auxOddEven (t,h,1,acum))
+         else (auxOddEven (t,h,1,curmax)) 
+      )
+      else (auxOddEven (t,h,acum+1,curmax))
+fun oddeven (nil) = 0
+   | oddeven (h::t) = auxOddEven (t,h,1,0) 
+
+oddeven ([1,2,3]);
+"""
+5.
+"""prolog
+prime_start(L,[[H|Ta]|T]):-
+   member(H,L),
+   nth0(IndH,L,H),
+   prime(H),
+   member(A,L),
+   nth0(IndA,L,A),
+   IndH < IndA,
+   prime_start(L,T).
+"""
+6.
+"""python
+def has_edge_mat(M,u,v):
+   return (v in M[u]) # O(N) N max(plithos akmvn kapoioy komvou)
+def adj_mat_list(M):
+   myGraph = {}
+   for i in M:
+      myGraph[i] = []
+      for j in i:
+         if (i != 0):
+            myGraph[i].append(j) 
+            # O(N^2), N = max(max(akmes),max(koryfes))
+
+def has_edge_list(G,u,v):
+   return (v in G[u]) # O(N) N einai plithos akmvn poy jekinoyn apo u
+
+"""

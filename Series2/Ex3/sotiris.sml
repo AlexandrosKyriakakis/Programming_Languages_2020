@@ -37,7 +37,7 @@ fun recursiveFoo ([]:int list list, N, M) = []
     let
         val cell_price = sub(cage,i,j)
         val neighbors = [[i+1,j],[i,j-1],[i,j+1],[i-1,j]]
-        
+         
         fun choose ([],acum) = acum
             | choose ([neighbor_i,neighbor_j]::tail2,acum) = 
                 if (allowed(N,M,[neighbor_i,neighbor_j],cell_price+(!adding)) andalso sub(cage,neighbor_i,neighbor_j) > cell_price+(!adding))
