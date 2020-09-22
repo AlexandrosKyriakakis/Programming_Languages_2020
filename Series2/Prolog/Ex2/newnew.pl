@@ -1,75 +1,157 @@
 use_module(library(lists)).
 %use_module(library(statistics)).
-set_prolog_stack(global, limit(100 000 000 000)).
-set_prolog_stack(trail,  limit(20 000 000 000)).
-set_prolog_stack(local,  limit(2 000 000 000)).
-getAS(Value,Index,Tree):-
-    arg(Index,Tree,Value),!.
-insertAS(Value,Index,Tree,Tree):-
-    nb_setarg(Index,Tree,Value),!.
-recursiveFoo([], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, []):-!.
-recursiveFoo([0,0],Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,[0,0]):-!.
-recursiveFoo([Leaf|_], Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal, [0,0]):- getAS(LeafDegree, Leaf, Degree), LeafDegree =\= 1,!.
+set_prolog_stack(global, limit(100000000000)).
+set_prolog_stack(trail, limit(20000000000)).
+set_prolog_stack(local, limit(2000000000)).
+getAS(Value, Index, Tree) :-
+    arg(Index, Tree, Value),
+    !.
+insertAS(Value, Index, Tree, Tree) :-
+    nb_setarg(Index, Tree, Value),
+    !.
+recursiveFoo([], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, []) :-
+    !.
+recursiveFoo([0, 0], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, [0, 0]) :-
+    !.
+recursiveFoo([Leaf|_], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, [0, 0]) :-
+    getAS(LeafDegree, Leaf, Degree),
+    LeafDegree=\=1,
+    !.
 
-recursiveFoo([Leaf|_], Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal,Node,Degree,NumOfChildren,LastFather_NumVisited_NumFinal, Result) :- 
-        getAS(AdjLeaf, Leaf, Node),
-        AdjLeaf = [], Result = [0,0],!.
-recursiveFoo([Leaf|Tail], Node, Degree, NumOfChildren, [_,NumVisited,NumFinal], NewNode, NewDegree, NewNumOfChildren, NewLastFather_NumVisited_NumFinal, Result) :- 
-    (
-            Leaf =\= 0,!,
-            getAS(AdjLeaf, Leaf, Node),!,
-            AdjLeaf = [Father|_],!,
+recursiveFoo([Leaf|_], Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Node, Degree, NumOfChildren, LastFather_NumVisited_NumFinal, Result) :-
+    getAS(AdjLeaf, Leaf, Node),
+    AdjLeaf=[],
+    Result=[0, 0],
+    !.
+recursiveFoo([Leaf|Tail], Node, Degree, NumOfChildren, [_, NumVisited, NumFinal], NewNode, NewDegree, NewNumOfChildren, NewLastFather_NumVisited_NumFinal, Result) :-
+    ( Leaf=\=0,
+      !,
+      getAS(AdjLeaf, Leaf, Node),
+      !,
+      AdjLeaf=[Father|_],
+      !,
             % Erase edge to leaf from fathers list 
-            getAS(Temp,Father,Node),!,
-            delete(Temp, Leaf, NewTemp),!,
-            insertAS(NewTemp,Father,Node,ReNewNode),!,
+      getAS(Temp, Father, Node),
+      !,
+      delete(Temp, Leaf, NewTemp),
+      !,
+      insertAS(NewTemp, Father, Node, ReNewNode),
+      !,
 
             % Decrease fathers degree
-            getAS(FathersDegree,Father,Degree),!,
-            NewFathersDegree is FathersDegree - 1, !,
-            insertAS(NewFathersDegree,Father,Degree,ReNewDegree),!,
+      getAS(FathersDegree, Father, Degree),
+      !,
+      NewFathersDegree is FathersDegree-1,
+      !,
+      insertAS(NewFathersDegree, Father, Degree, ReNewDegree),
+      !,
             % Add children
-            getAS(LeafChildren, Leaf, NumOfChildren),!,
-            getAS(FatherChildren, Father, NumOfChildren),!,
-            NewFatherChildren is LeafChildren + FatherChildren + 1,!,
-            insertAS(NewFatherChildren,Father,NumOfChildren,ReNewNumOfChildren),!,
+      getAS(LeafChildren, Leaf, NumOfChildren),
+      !,
+      getAS(FatherChildren, Father, NumOfChildren),
+      !,
+      NewFatherChildren is LeafChildren+FatherChildren+1,
+      !,
+      insertAS(NewFatherChildren, Father, NumOfChildren, ReNewNumOfChildren),
+      !,
             % Increase number of visited and update last father
-            NewLastFather = Father,!,
-            NewNumVisited is NumVisited + 1,!,
-            ReNewLastFather_NumVisited_NumFinal = [NewLastFather,NewNumVisited,NumFinal],!,
-            ((NewFathersDegree =:= 1)
-            ->  append([Father],Tail,NewRecursion), !,
-                recursiveFoo(NewRecursion, ReNewNode, ReNewDegree, ReNewNumOfChildren, ReNewLastFather_NumVisited_NumFinal, NewNode, NewDegree, NewNumOfChildren, NewLastFather_NumVisited_NumFinal, Result),!
-            ;   recursiveFoo(Tail, ReNewNode, ReNewDegree, ReNewNumOfChildren, ReNewLastFather_NumVisited_NumFinal, NewNode, NewDegree, NewNumOfChildren, NewLastFather_NumVisited_NumFinal, Result)
-                )
-    ),!.
-randomWalk(_,RandomUnvisitedNode,_,_,_,Node,_,[_, _, _],_,[0,0],0):- getAS(DegreeOfRdNode,RandomUnvisitedNode,Node), DegreeOfRdNode = [],!.
-randomWalk(TempTemp,_,_,_,N,_,_,[LastFather, NumVisited, _],_,ResultList, Result):-
-        (   NewNumVisited is NumVisited + 1,
-            NewN is N+1,
-            TempTemp = LastFather, NewNumVisited =\= NewN, ResultList = [0,0], Result = 0),!.
-randomWalk(TempTemp,_,Acum,NumFinalRoots,N,_,_,[LastFather, NumVisited, _],_,ResultList, Result):-
-    (   NewNumVisited is NumVisited + 1,
-        NewN is N+1,
-        TempTemp =:= LastFather, NewNumVisited =:= NewN, msort(Acum,ResultList), Result = NumFinalRoots),!.
-randomWalk(_,RandomUnvisitedNode,Acum,NumFinalRoots,N,Node,Degree,[LastFather, NumVisited, NumFinal],NumOfChildren,ResultList, Result):-
-    (   NewNumVisited is NumVisited + 1,!,
-        getAS(ToAcum,RandomUnvisitedNode,NumOfChildren),!,
-        AddToAcum is ToAcum + 1,!,
-        getAS(Temp, RandomUnvisitedNode, Node),!,
-        Temp = [TempFather|_],!,
-        getAS(TempFatherAdj,TempFather,Node),!,
-        delete(TempFatherAdj,RandomUnvisitedNode, NewTempFatherAdj),!,
-        insertAS(NewTempFatherAdj,TempFather,Node,NewNode),!,  %Evala Renew
-        append([AddToAcum],Acum,NewAccum), NewNumFinalRoots is NumFinalRoots + 1, !,
-        randomWalk(TempFather,TempFather,NewAccum,NewNumFinalRoots,N,NewNode,Degree,[LastFather,NewNumVisited,NumFinal],NumOfChildren, ResultList, Result),!
-    ),!.
+      NewLastFather=Father,
+      !,
+      NewNumVisited is NumVisited+1,
+      !,
+      ReNewLastFather_NumVisited_NumFinal=[NewLastFather, NewNumVisited, NumFinal],
+      !,
+      (   NewFathersDegree=:=1
+      ->  append([Father], Tail, NewRecursion),
+          !,
+          recursiveFoo(NewRecursion,
+                       ReNewNode,
+                       ReNewDegree,
+                       ReNewNumOfChildren,
+                       ReNewLastFather_NumVisited_NumFinal,
+                       NewNode,
+                       NewDegree,
+                       NewNumOfChildren,
+                       NewLastFather_NumVisited_NumFinal,
+                       Result),
+          !
+      ;   recursiveFoo(Tail,
+                       ReNewNode,
+                       ReNewDegree,
+                       ReNewNumOfChildren,
+                       ReNewLastFather_NumVisited_NumFinal,
+                       NewNode,
+                       NewDegree,
+                       NewNumOfChildren,
+                       NewLastFather_NumVisited_NumFinal,
+                       Result)
+      )
+    ),
+    !.
+randomWalk(_, RandomUnvisitedNode, _, _, _, Node, _, [_, _, _], _, [0, 0], 0) :-
+    getAS(DegreeOfRdNode, RandomUnvisitedNode, Node),
+    DegreeOfRdNode=[],
+    !.
+randomWalk(TempTemp, _, _, _, N, _, _, [LastFather, NumVisited, _], _, ResultList, Result) :-
+    ( NewNumVisited is NumVisited+1,
+      NewN is N+1,
+      TempTemp=LastFather,
+      NewNumVisited=\=NewN,
+      ResultList=[0, 0],
+      Result=0
+    ),
+    !.
+randomWalk(TempTemp, _, Acum, NumFinalRoots, N, _, _, [LastFather, NumVisited, _], _, ResultList, Result) :-
+    ( NewNumVisited is NumVisited+1,
+      NewN is N+1,
+      TempTemp=:=LastFather,
+      NewNumVisited=:=NewN,
+      msort(Acum, ResultList),
+      Result=NumFinalRoots
+    ),
+    !.
+randomWalk(_, RandomUnvisitedNode, Acum, NumFinalRoots, N, Node, Degree, [LastFather, NumVisited, NumFinal], NumOfChildren, ResultList, Result) :-
+    ( NewNumVisited is NumVisited+1,
+      !,
+      getAS(ToAcum, RandomUnvisitedNode, NumOfChildren),
+      !,
+      AddToAcum is ToAcum+1,
+      !,
+      getAS(Temp, RandomUnvisitedNode, Node),
+      !,
+      Temp=[TempFather|_],
+      !,
+      getAS(TempFatherAdj, TempFather, Node),
+      !,
+      delete(TempFatherAdj, RandomUnvisitedNode, NewTempFatherAdj),
+      !,
+      insertAS(NewTempFatherAdj, TempFather, Node, NewNode),
+      !,  %Evala Renew
+      append([AddToAcum], Acum, NewAccum),
+      NewNumFinalRoots is NumFinalRoots+1,
+      !,
+      randomWalk(TempFather,
+                 TempFather,
+                 NewAccum,
+                 NewNumFinalRoots,
+                 N,
+                 NewNode,
+                 Degree,
+                 [LastFather, NewNumVisited, NumFinal],
+                 NumOfChildren,
+                 ResultList,
+                 Result),
+      !
+    ),
+    !.
 
 
 
 make_adj([], T, DT, RT, RDT) :-
-    RT = T,!,
-    RDT = DT,!.
+    RT=T,
+    !,
+    RDT=DT,
+    !.
 
 
 make_adj([First,Second|Rest], T, DT, RT, RDT):-
@@ -135,6 +217,7 @@ coronograph(File, Answers) :-
     read_line(Stream, T),!,
     [H | _] = T,!,
     read_and_do(H, Stream, [], Answers),!.
+
 run :- coronograph('coronagraph.in12', Answers), writeln(Answers), halt.
 read_edges(_Stream, 0, CurrList, InputList):-
     reverse(CurrList,InputList),!.

@@ -42,6 +42,7 @@ def doTheJob():
                                                [::-1] + currentChar]
                 if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
                     DPArray[new_i][j+1][k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, k])
 
             if (state[0] == currentChar):
@@ -49,17 +50,20 @@ def doTheJob():
                 new_i = indexingPossibleStates[possibleStates[i][::-1]]
                 if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
                     DPArray[new_i][j+1][k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, k])
             if (currentChar not in state):
                 nextMove = DPArray[i][j][k] + "p"
                 new_i = indexingPossibleStates[possibleStates[i] + currentChar]
                 if (DPArray[new_i][j+1][k] == "" or len(DPArray[new_i][j+1][k]) > len(nextMove)):
                     DPArray[new_i][j+1][k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, k])
             if (state[-1] == currentChar):  # G == current char
                 nextMove = DPArray[i][j][k] + "p"
                 if (DPArray[i][j+1][k] == "" or len(DPArray[i][j+1][k]) > len(nextMove)):
                     DPArray[i][j+1][k] = nextMove
+                    maxUse[i][j+1] += 1
                     queue.append([i, j+1, k])
 
             if (complement[currentChar] not in state):
@@ -69,6 +73,7 @@ def doTheJob():
                                                [::-1] + complement[currentChar]]
                 if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) > len(nextMove)):
                     DPArray[new_i][j+1][new_k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, new_k])
 
             if (state[0] == complement[currentChar]):
@@ -77,6 +82,7 @@ def doTheJob():
                 new_k = int(not k)
                 if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) > len(nextMove)):
                     DPArray[new_i][j+1][new_k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, new_k])
 
             if (complement[currentChar] not in state):
@@ -86,12 +92,14 @@ def doTheJob():
                                                complement[currentChar]]
                 if (DPArray[new_i][j+1][new_k] == "" or len(DPArray[new_i][j+1][new_k]) > len(nextMove)):  # FIXME ">="
                     DPArray[new_i][j+1][new_k] = nextMove
+                    maxUse[new_i][j+1] += 1
                     queue.append([new_i, j+1, new_k])
 
             if (state[-1] == complement[currentChar]):  # G == complemented current char
                 nextMove = DPArray[i][j][k] + "cp"
                 if (DPArray[i][j+1][int(not k)] == "" or len(DPArray[i][j+1][int(not k)]) > len(nextMove)):  # FIXME ">="
                     DPArray[i][j+1][int(not k)] = nextMove
+                    maxUse[i][j+1] += 1
                     queue.append([i, j+1, int(not k)])
 
     def run():
@@ -111,7 +119,7 @@ def doTheJob():
         currentLen = len(currentInput)
         queue = []
         DPArray = [[["", ""] for _ in range(currentLen)] for _ in range(64)]
-
+        maxUse = [[0 for _ in range(currentLen)] for _ in range(64)]
         run()
         res = []
         for i in range(64):
@@ -121,6 +129,7 @@ def doTheJob():
         minimum = min(len(i) for i in res if (i != ""))
         print(
             sorted(list(filter(lambda i: i != "" and len(i) == minimum, res)))[0])
+        print(max(max(maxUse)))
 
     # Get ready to start
 
