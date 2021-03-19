@@ -1,4 +1,4 @@
- # Plug n' Drive
+ # Programming Languages I
 
 **Semester Project for Programming Languages I course @ NTUA, 6th Semester 2020**
 
