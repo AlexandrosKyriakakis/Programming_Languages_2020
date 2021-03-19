@@ -14,6 +14,14 @@ The goal of the project was to learn in depth the following programming language
    - Prolog
    - Python
 
+**Performance**
+
+All programs have the maximum performance on the corresponding problems.
+
+**Grade**
+
+It is part of the top 5 exercises on current year based on results and time consumption.
+
 
 **This project was a collaborate effort of a team of 2 members. Those members are:**
 

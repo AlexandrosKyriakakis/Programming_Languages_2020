@@ -1,0 +1,183 @@
+from sys import maxsize, argv
+def InputMap() :
+    mymax = maxsize
+    mydict = {
+            'X':-1, 'S':mymax,  '.':mymax,  
+            'W':0,  'T':mymax,  'A':-2,
+            }
+    cage = []
+    N,M = 0,0
+    start,end,virus,airports = [],[],[],[]
+    counter = 0
+    def readData (i):
+        nonlocal counter
+        if (counter == M): counter = 0
+        if (i == 'A'): 
+            airports.append([N-1,counter])
+        elif (i == 'S'): 
+            start.append(N-1)
+            start.append(counter)
+        elif (i == 'T'): 
+            end.append(N-1)
+            end.append(counter)
+        elif (i == 'W'): 
+            virus.append(N-1)
+            virus.append(counter)        
+        counter += 1 
+        return (mydict[i])
+    mylen = len
+    with open(argv[1],mode='r') as FileObj:
+        cageAppend = cage.append
+        for line in FileObj:
+            N += 1
+            M = mylen(line)-1
+            cageAppend(list(map(readData,line[:-1])))
+
+    return(N-1,M-1,cage,start, end ,virus, airports)
+
+def do_the_job ():
+    # Global Variables
+    N, M, cage, start, end, virus, airports = InputMap()
+    adding = 2
+    foundEnd = False
+    swtos = False
+    counter = 1
+    newcage = list(map(lambda i:([maxsize]*(M+1)),range(N+1)))
+    from collections import deque
+    queue = deque()
+    
+    def allowed (cell): return (((cell[0]>-1) and (cell[0] <= N) and (cell[1] > -1) and (cell[1] <= M)))
+    def recursiveFoo1(cell):
+        nonlocal counter, foundEnd, recFoo
+        i,j = cell
+        cell_price = cage[i][j]
+        for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
+            currNeighbor = cage[neighbor_i][neighbor_j]
+            if (currNeighbor > (cell_price + adding) ):
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+                queue.append([neighbor_i,neighbor_j])
+            elif (currNeighbor == -2):
+                recFoo = recursiveFoo2
+                queueAppend = queue.append
+                for airport_i,airport_j in airports:
+                    cage[airport_i][airport_j] = cell_price + adding + 5
+                    queueAppend([airport_i,airport_j])
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+    
+    recFoo = recursiveFoo1
+    
+    def recursiveFoo2(cell):
+        nonlocal counter, foundEnd
+        i,j = cell
+        cell_price = cage[i][j]
+        for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
+            currNeighbor = cage[neighbor_i][neighbor_j]
+            if (currNeighbor > (cell_price + adding) ):
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+                queue.append([neighbor_i,neighbor_j])
+    
+    def recursiveFoo3(cell):
+        nonlocal counter, foundEnd
+        i,j = cell
+        cell_price = cage[i][j]
+        for neighbor_i,neighbor_j in filter(allowed,[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]):
+            currNeighbor = cage[neighbor_i][neighbor_j]
+            if (currNeighbor > (cell_price + adding) ):
+                if ([neighbor_i,neighbor_j] == end): foundEnd = True
+                newcage[neighbor_i][neighbor_j] = counter
+                counter += 1
+                cage[neighbor_i][neighbor_j] = cell_price + adding
+                queue.append([neighbor_i,neighbor_j])
+    
+    # Virus spreading
+    def VirusSpread ():
+        nonlocal queue,virus
+        queue.append(virus)
+        while queue: 
+            currentCell = queue.popleft()
+            recFoo(currentCell)
+
+    def SotosSpread():
+        nonlocal swtos, adding, cage, start, queue
+        cage[start[0]][start[1]] = 0
+        queue.append(start)
+        adding = 1
+
+        # Sotiris spreading
+        while queue: 
+            currentCell = queue.popleft()
+            recursiveFoo3(currentCell)
+    
+    def allowedHome(cell, cagePrice):
+        return (allowed(cell) and (cage[cell[0]][cell[1]] == cagePrice - 1))
+                
+    def returnHome(cell):
+        #nonlocal cage
+        if (cell == start):
+            return None 
+        i,j = cell
+        #print(newcage[i][j])
+        mydict = {((i+1)*M+j):'U', (i*M+j-1):'R', (i*M+ j+1):'L', ((i-1)*M+ j):'D'}
+        cagePrice = cage[i][j]
+        filteredlist = list(filter(lambda x: allowedHome(x, cagePrice),[[i+1,j],[i,j-1],[i,j+1],[i-1,j]]))
+        mylist = list(map(lambda cell: newcage[cell[0]][cell[1]],filteredlist))
+        myMinIndex = mylist.index(min(mylist))
+        return (mydict[filteredlist[myMinIndex][0]*M+filteredlist[myMinIndex][1]],filteredlist[myMinIndex])
+            
+        
+    """
+    fun returnHome ([i, j],revSol: char list, numSol) = 
+        let 
+            val up = if allowedHome(N,M,[i+1,j]) then sub(newcage,i+1,j) else (valOf Int.maxInt)
+            val right = if allowedHome(N,M,[i,j-1]) then sub(newcage,i,j-1) else (valOf Int.maxInt)
+            val left = if allowedHome(N,M,[i,j+1]) then sub(newcage,i,j+1) else (valOf Int.maxInt)
+            val down = if allowedHome(N,M,[i-1,j]) then sub(newcage,i-1,j) else (valOf Int.maxInt)
+        in
+            if ( allowedHome(N,M,[i+1,j]) andalso (sub(cage,i+1,j) = (sub(cage,i,j)-1)) andalso up<down andalso up<left andalso up<right  )
+            then (returnHome([i+1,j],(#"U")::revSol,numSol+1)) 
+            else (
+                if ( allowedHome(N,M,[i,j-1]) andalso (sub(cage,i,j-1) = (sub(cage,i,j)-1)) andalso right<down andalso right<left andalso right<up)
+                then (returnHome([i,j-1],(#"R")::revSol,numSol+1)  )
+                else (
+                    if ( allowedHome(N,M,[i,j+1]) andalso (sub(cage,i,j+1) = (sub(cage,i,j)-1)) andalso left<down andalso left<up andalso left<right)
+                    then ( returnHome([i,j+1],(#"L")::revSol,numSol+1) )
+                    else (
+                        if ( allowedHome(N,M,[i-1,j]) andalso (sub(cage,i-1,j) = (sub(cage,i,j)-1)) andalso down<up andalso down<left andalso down<right)
+                        then ( returnHome([i-1,j],(#"D")::revSol,numSol+1))
+                        else (
+                            if ([i, j] = start) then (revSol, numSol)
+                            else ([#"a",#"l",#"e",#"x"],42)
+                        )
+                    )
+                )
+            )
+        end
+    """
+    def FinalReturn():
+        resultlist = []
+        nextcell = end
+        resultnum = 0
+        #letter, nextcell = returnHome(end)
+        #resultlist.append(letter)
+        current = returnHome(nextcell)
+        while (current != None):
+            resultlist.append(current[0])
+            current = returnHome(current[1])
+            resultnum += 1
+        return(resultnum, resultlist)
+
+
+    # Apothiki
+    #print(N,M, start, end, airports)
+    VirusSpread()
+    SotosSpread()
+    #import numpy as np
+    #print(np.array(cage))
+    #print (np.array(newcage))
+    if (foundEnd):
+        resultNum,resultList = FinalReturn()
+        print(resultNum)
+        print("".join(resultList[::-1]))
+    else: print("IMPOSSIBLE")
+do_the_job()        
+        
