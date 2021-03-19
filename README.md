@@ -21,7 +21,7 @@ All programs have the maximum performance on the corresponding problems.
 **Grade**
 
 It is part of the top 5 exercises on current year based on results and time consumption.
-!()[https://github.com/AlexandrosKyriakakis/Programming_Languages_2020/blob/master/Results.png]
+![](https://github.com/AlexandrosKyriakakis/Programming_Languages_2020/blob/master/Results.png)
 
 
 **This project was a collaborate effort of a team of 2 members. Those members are:**
